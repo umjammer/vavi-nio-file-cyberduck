@@ -3,7 +3,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-nio-file-cyberduck</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
 
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -44,18 +44,16 @@
       <version>0.0.4v</version>
     </dependency>
 
-<!--
     <dependency>
       <groupId>com.github.umjammer</groupId>
-      <artifactId>vavi-net-auth</artifactId>
-      <version>0.0.3</version>
+      <artifactId>vavi-commons</artifactId>
+      <version>1.0.11</version>
     </dependency>
--->
 
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-nio-file</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.2</version>
     </dependency>
 
     <dependency>
@@ -68,6 +66,20 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>5.3.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.umjammer</groupId>
+      <artifactId>vavi-nio-file</artifactId>
+      <version>0.0.2</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.rainerhahnekamp</groupId>
+      <artifactId>sneakythrow</artifactId>
+      <version>1.2.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

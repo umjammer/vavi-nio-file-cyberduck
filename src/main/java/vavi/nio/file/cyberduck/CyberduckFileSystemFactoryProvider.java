@@ -17,6 +17,8 @@ import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
  */
 public final class CyberduckFileSystemFactoryProvider extends FileSystemFactoryProvider {
 
+    public static final String PARAM_ID = "id";
+
     public CyberduckFileSystemFactoryProvider() {
         setAttributesFactory(new CyberduckFileAttributesFactory());
         setOptionsFactory(new CyberduckFileSystemOptionsFactory());

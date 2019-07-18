@@ -93,7 +93,7 @@ public final class CyberduckFileSystemDriver extends UnixLikeFileSystemDriverBas
 //System.err.println("ignoreAppleDouble: " + ignoreAppleDouble);
     }
 
-    /** */
+    /** TODO cyberduck has cache? */
     private Cache<ch.cyberduck.core.Path> cache = new Cache<ch.cyberduck.core.Path>() {
         /**
          * TODO when the parent is not cached
@@ -109,14 +109,14 @@ public final class CyberduckFileSystemDriver extends UnixLikeFileSystemDriverBas
                 }
 
                 try {
-                    String pathString = toPathString(path);
+//                    String pathString = toPathString(path);
 //Debug.println("path: " + pathString);
-                    Search search = session._getFeature(Search.class);
                     ch.cyberduck.core.Path entry;
                     if (path.getNameCount() == 0) {
                         entry = new DefaultHomeFinderService(session).find();
                     } else {
                         ch.cyberduck.core.Path parentEntry = getEntry(path.getParent());
+                        Search search = session._getFeature(Search.class);
                         AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(toFilenameString(path)), new DisabledListProgressListener());
                         if (!entries.isEmpty()) {
 Debug.println("entries: " + entries.size());
@@ -125,7 +125,7 @@ Debug.println("entries: " + entries.size());
                             if (cache.containsFile(path)) {
                                 cache.removeEntry(path);
                             }
-                            throw new NoSuchFileException(pathString);
+                            throw new NoSuchFileException(path.toString());
                         }
                     }
                     cache.putFile(path, entry);
@@ -144,7 +144,7 @@ Debug.println("entries: " + entries.size());
 
         // TODO: metadata driver
         if (entry.isDirectory()) {
-            throw new IsDirectoryException("path: " + path);
+            throw new IsDirectoryException(path.toString());
         }
 
         try {
@@ -179,9 +179,9 @@ Debug.println("entries: " + entries.size());
             ch.cyberduck.core.Path entry = cache.getEntry(path);
 
             if (entry.isDirectory()) {
-                throw new IsDirectoryException("path: " + path);
+                throw new IsDirectoryException(path.toString());
             } else {
-                throw new FileAlreadyExistsException("path: " + path);
+                throw new FileAlreadyExistsException(path.toString());
             }
         } catch (NoSuchFileException e) {
 Debug.println("newOutputStream: " + e.getMessage());
@@ -194,9 +194,15 @@ Debug.println("newOutputStream: " + e.getMessage());
                 try {
                     final Write<?> write = session._getFeature(Write.class);
                     TransferStatus status =  new TransferStatus();
-                    ch.cyberduck.core.Path newEntry = new ch.cyberduck.core.Path(toPathString(path), EnumSet.of(ch.cyberduck.core.Path.Type.file));
-                    StatusOutputStream<?> out = write.write(newEntry, status, new DisabledConnectionCallback());
-                    IOUtils.copy(is, out);
+                    status.setOffset(0);
+                    status.setLength(is.available());
+                    ch.cyberduck.core.Path parentEntry = cache.getEntry(path.getParent());
+                    ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(path), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+                    StatusOutputStream<?> os = write.write(preEntry, status, new DisabledConnectionCallback());
+                    IOUtils.copyLarge(is, os);
+                    is.close();
+                    os.close();
+                    ch.cyberduck.core.Path newEntry = cache.getEntry(path);
                     cache.addEntry(path, newEntry);
                 } catch (BackgroundException e) {
                     throw new IllegalStateException(e);
@@ -392,7 +398,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
                 AttributedList<ch.cyberduck.core.Path> children = listService.list(entry, new DisabledListProgressListener());
 
                 for (final ch.cyberduck.core.Path child : children) {
-                    Path childPath = dir.resolve(child.getAbsolute());
+                    Path childPath = dir.resolve(child.getName());
                     list.add(childPath);
 //System.err.println("child: " + childPath.toRealPath().toString());
 
@@ -431,11 +437,12 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
     /** */
     private void copyEntry(final Path source, final Path target) throws IOException {
         ch.cyberduck.core.Path sourceEntry = cache.getEntry(source);
-        ch.cyberduck.core.Path targetParentEntry = cache.getEntry(target.getParent());
         if (sourceEntry.isFile()) {
             try {
+                ch.cyberduck.core.Path targetParentEntry = cache.getEntry(target.getParent());
+                ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
                 final Copy copy = session._getFeature(Copy.class);
-                ch.cyberduck.core.Path newEntry = copy.copy(sourceEntry, targetParentEntry, new TransferStatus(), new DisabledConnectionCallback());
+                ch.cyberduck.core.Path newEntry = copy.copy(sourceEntry, preEntry, new TransferStatus(), new DisabledConnectionCallback());
 
                 cache.addEntry(target, newEntry);
             } catch (BackgroundException e) {
@@ -443,7 +450,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
             }
         } else if (sourceEntry.isDirectory()) {
             // TODO java spec. allows empty folder
-            throw new IsDirectoryException("source can not be a folder: " + source);
+            throw new IsDirectoryException(source.toString());
         }
     }
 
@@ -452,22 +459,25 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
      */
     private void moveEntry(final Path source, final Path target, boolean targetIsParent) throws IOException {
         ch.cyberduck.core.Path sourceEntry = cache.getEntry(source);
-        ch.cyberduck.core.Path targetParentEntry = cache.getEntry(targetIsParent ? target : target.getParent());
         if (sourceEntry.isFile()) {
             try {
+                ch.cyberduck.core.Path targetParentEntry = cache.getEntry(targetIsParent ? target : target.getParent());
                 ch.cyberduck.core.Path preEntry;
                 if (targetIsParent) {
                     preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(source), EnumSet.of(ch.cyberduck.core.Path.Type.file));
                 } else {
-                    preEntry = new ch.cyberduck.core.Path(toPathString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+                    preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
                 }
                 final Move move = session._getFeature(Move.class);
-                ch.cyberduck.core.Path patchedEntry = move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                // TODO why cannot use move() return like copy or rename
+                move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
                 cache.removeEntry(source);
                 if (targetIsParent) {
-                    cache.addEntry(target.resolve(source.getFileName()), patchedEntry);
+                    ch.cyberduck.core.Path newEntry = cache.getEntry(target.resolve(source.getFileName())); // TODO
+                    cache.addEntry(target.resolve(source.getFileName()), newEntry);
                 } else {
-                    cache.addEntry(target, patchedEntry);
+                    ch.cyberduck.core.Path newEntry = cache.getEntry(target); // TODO
+                    cache.addEntry(target, newEntry);
                 }
             } catch (BackgroundException e) {
                 throw new IllegalStateException(e);
@@ -484,7 +494,8 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
 //Debug.println(sourceEntry.id + ", " + sourceEntry.name);
 
         try {
-            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(toPathString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+            ch.cyberduck.core.Path targetParentEntry = cache.getEntry(target.getParent());
+            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
             final Move move = session._getFeature(Move.class);
             ch.cyberduck.core.Path patchedEntry = move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             cache.removeEntry(source);
