@@ -5,6 +5,26 @@
   <artifactId>vavi-nio-file-cyberduck</artifactId>
   <version>0.0.1</version>
 
+  <profiles>
+    <profile>
+      <id>jitpack</id>
+      <activation>
+        <property>
+          <name>env.JITPACK</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.github.umjammer</groupId>
+          <artifactId>vavi-nio-file</artifactId>
+          <version>0.0.2</version>
+          <type>test-jar</type>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
