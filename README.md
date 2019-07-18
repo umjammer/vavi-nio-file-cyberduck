@@ -8,4 +8,4 @@ fuse for java and many file systems.
 
 | fs                 | list | upload | download | copy | move | rm | mkdir | cache | watch | library |
 |--------------------|------|--------|----------|------|------|----|-------|-------|-------|---------|
-| cyberduck  | ✅    |       |         |     |     |   |      |      |       | [vavi-nio-file-cyberduck](https://github.com/umjammer/vavi-nio-file-cyberduck), [cyberduck](https://github.com/iterate-ch/cyberduck) |
+| cyberduck  | ✅    | ✅     | ✅       | ✅   | ✅   | ✅ | ✅    | ✅    |       | [vavi-nio-file-cyberduck](https://github.com/umjammer/vavi-nio-file-cyberduck), [cyberduck](https://github.com/iterate-ch/cyberduck) |
