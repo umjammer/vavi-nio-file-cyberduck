@@ -108,7 +108,6 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
 
     /**
      * @param uri "cyberduck:protocol:///?id=alias", sub url (after "cyberduck:") parts will be replaced by properties.
-     * TODO root from uri
      */
     @Nonnull
     @Override
