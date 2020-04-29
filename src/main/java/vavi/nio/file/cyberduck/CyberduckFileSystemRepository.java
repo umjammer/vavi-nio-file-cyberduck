@@ -50,7 +50,7 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
         super("cyberduck", new CyberduckFileSystemFactoryProvider());
     }
 
-    /** */
+    /** TODO naming */
     static abstract class Factory {
         @Property(name = "cyberduck.username.{0}")
         protected String username;
@@ -76,7 +76,7 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
         /** */
         abstract Session<?> getSession() throws IOException;
 
-        /** */
+        /** TODO implement properly */
         static Factory getFactory(URI uri) {
             String protocol = uri.getScheme();
             switch (protocol) {
