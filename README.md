@@ -1,4 +1,4 @@
-[![Release](https://jitpack.io/v/umjammer/vavi-nio-file-cyberduck.svg)](https://jitpack.io/#umjammer/vavi-nio-file-cyberduck) [![Actions Status](https://github.com/umjammer/vavi-nio-file-cyberduck/workflows/Java%20CI/badge.svg)](https://github.com/umjammer/vavi-nio-file-cyberduck/actions)
+[![Release](https://jitpack.io/v/umjammer/vavi-nio-file-cyberduck.svg)](https://jitpack.io/#umjammer/vavi-nio-file-cyberduck) [![Actions Status](https://github.com/umjammer/vavi-nio-file-cyberduck/workflows/Java%20CI/badge.svg)](https://github.com/umjammer/vavi-nio-file-cyberduck/actions) [![Parent](https://img.shields.io/badge/Parent-vavi--apps--fuse-pink)](https://github.com/umjammer/vavi-apps-fuse)
 
 # vavi-nio-file-cyberduck
 
