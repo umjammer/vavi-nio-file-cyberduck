@@ -8,7 +8,6 @@ package vavi.nio.file.cyberduck;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -112,27 +111,23 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
     @Nonnull
     @Override
     public FileSystemDriver createDriver(final URI uri, final Map<String, ?> env) throws IOException {
-        try {
-            String uriString = uri.toString();
-            URI subUri = new URI(uriString.substring(uriString.indexOf(':') + 1));
-            String protocol = subUri.getScheme();
+        String uriString = uri.toString();
+        URI subUri = URI.create(uriString.substring(uriString.indexOf(':') + 1));
+        String protocol = subUri.getScheme();
 Debug.println("protocol: " + protocol);
 
-            Map<String, String> params = getParamsMap(subUri);
-            if (!params.containsKey(CyberduckFileSystemProvider.PARAM_ID)) {
-                throw new NoSuchElementException("uri not contains a param " + CyberduckFileSystemProvider.PARAM_ID);
-            }
-            final String alias = params.get(CyberduckFileSystemProvider.PARAM_ID);
-
-            Factory factory = Factory.getFactory(subUri);
-            PropsEntity.Util.bind(factory, alias);
-            Session<?> session = factory.getSession();
-
-            final CyberduckFileStore fileStore = new CyberduckFileStore(session, factoryProvider.getAttributesFactory());
-            return new CyberduckFileSystemDriver(fileStore, factoryProvider, session, env);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
+        Map<String, String> params = getParamsMap(subUri);
+        if (!params.containsKey(CyberduckFileSystemProvider.PARAM_ID)) {
+            throw new NoSuchElementException("uri not contains a param " + CyberduckFileSystemProvider.PARAM_ID);
         }
+        final String alias = params.get(CyberduckFileSystemProvider.PARAM_ID);
+
+        Factory factory = Factory.getFactory(subUri);
+        PropsEntity.Util.bind(factory, alias);
+        Session<?> session = factory.getSession();
+
+        final CyberduckFileStore fileStore = new CyberduckFileStore(session, factoryProvider.getAttributesFactory());
+        return new CyberduckFileSystemDriver(fileStore, factoryProvider, session, env);
     }
 
     /* ad-hoc hack for ignoring checking opacity */
