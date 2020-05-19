@@ -25,3 +25,19 @@ cyberduck.password.webdav=your_password
 cyberduck.host.webdav=localhost
 cyberduck.port.webdav=8443
 ```
+
+### Sample
+
+https://github.com/umjammer/vavi-nio-file-cyberduck/blob/master/src/test/java/vavi/nio/file/cyberduck/Test1.java
+
+## Test
+
+```shell
+$ cp local.properties.sample local.properties
+$ vi local.properties
+test.account=your_webdav@account.com
+test.password=your_webdav_password
+test.host=your_webdav_host
+test.port=your_webdav_port
+$ mvn test
+```
