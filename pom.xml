@@ -3,30 +3,84 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-nio-file-cyberduck</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
+
+  <url>https://github.com/umjammer/vavi-nio-file-cyberduck</url>
+  <scm>
+    <url>https://github.com/umjammer/vavi-nio-file-cyberduck</url>
+  </scm>
+  <name>vavi-nio-file-cyberduck</name>
 
   <profiles>
     <profile>
-      <id>jitpack</id>
+      <id>local (not on CI)</id>
       <activation>
+        <file>
+          <exists>${basedir}/local.properties</exists>
+        </file>
         <property>
           <name>env.JITPACK</name>
-          <value>true</value>
+          <value>!true</value>
         </property>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.github.umjammer</groupId>
-          <artifactId>vavi-nio-file</artifactId>
-          <version>0.0.2</version>
-          <type>test-jar</type>
-        </dependency>
-        <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter-api</artifactId>
-          <version>5.3.0</version>
-        </dependency>
-      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>1.0.0</version>
+            <executions>
+              <execution>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>read-project-properties</goal>
+                </goals>
+                <configuration>
+                  <files>
+                    <file>${basedir}/local.properties</file>
+                  </files>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.2</version>
+            <configuration>
+              <environmentVariables>
+                <TEST_ACCOUNT>${test.account}</TEST_ACCOUNT>
+                <TEST_PASSWORD>${test.password}</TEST_PASSWORD>
+                <TEST_HOST>${test.host}</TEST_HOST>
+                <TEST_PORT>${test.port}</TEST_PORT>
+              </environmentVariables>
+              <argLine>-Djava.util.logging.config.file=${project.build.testResources.testResource.directory}/logging.properties</argLine>
+              <trimStackTrace>false</trimStackTrace>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>github workflow</id>
+      <activation>
+        <property>
+          <name>env.GITHUB_WORKFLOW</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.2</version>
+            <configuration>
+              <argLine>-Djava.util.logging.config.file=${project.build.testResources.testResource.directory}/logging.properties</argLine>
+              <trimStackTrace>false</trimStackTrace>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
@@ -69,19 +123,25 @@
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>java7-fs-base</artifactId>
-      <version>0.0.5v</version>
+      <version>0.0.6v</version>
     </dependency>
 
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-commons</artifactId>
-      <version>1.0.15</version>
+      <version>1.0.16</version>
     </dependency>
 
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-nio-file</artifactId>
-      <version>0.0.3</version>
+      <version>0.0.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.umjammer</groupId>
+      <artifactId>vavi-net-auth</artifactId>
+      <version>0.0.10</version>
     </dependency>
 
     <dependency>
@@ -106,7 +166,7 @@
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-nio-file</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.5</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

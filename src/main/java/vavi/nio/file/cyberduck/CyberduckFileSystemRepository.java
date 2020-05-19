@@ -9,7 +9,6 @@ package vavi.nio.file.cyberduck;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -19,20 +18,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.github.fge.filesystem.driver.FileSystemDriver;
 import com.github.fge.filesystem.provider.FileSystemRepositoryBase;
 
+import vavi.net.auth.proprietary.cyberduck.CyberduckAuthenticator;
+import vavi.net.auth.proprietary.cyberduck.CyberduckCredential;
 import vavi.util.Debug;
-import vavi.util.properties.annotation.Property;
-import vavi.util.properties.annotation.PropsEntity;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.Proxy;
 
 
 /**
@@ -49,64 +39,9 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
         super("cyberduck", new CyberduckFileSystemFactoryProvider());
     }
 
-    /** TODO naming */
-    static abstract class Factory {
-        @Property(name = "cyberduck.username.{0}")
-        protected String username;
-        @Property(name = "cyberduck.password.{0}")
-        protected transient String password;
-        @Property(name = "cyberduck.host.{0}")
-        protected String host;
-        @Property(name = "cyberduck.port.{0}")
-        protected String port;
-        /** */
-        protected URI uri;
-
-        /** */
-        Factory(URI uri) {
-            this.uri = uri;
-            String[] userInfo = uri.getUserInfo() != null ? uri.getUserInfo().split(":") : null;
-            this.username = userInfo != null && !userInfo[0].isEmpty() ? userInfo[0] : null;
-            this.password = userInfo != null && !userInfo[1].isEmpty() ? userInfo[1] : null;
-            this.host = uri.getHost();
-            this.port = uri.getPort() != -1 ? String.valueOf(uri.getPort()) : null;
-        }
-
-        /** */
-        abstract Session<?> getSession() throws IOException;
-
-        /** TODO implement properly */
-        static Factory getFactory(URI uri) {
-            String protocol = uri.getScheme();
-            switch (protocol) {
-            case "webdav": return new WebdavFactory(uri);
-            default: throw new IllegalArgumentException(protocol);
-            }
-        }
-    }
-
-    @PropsEntity(url = "file://${user.home}/.vavifuse/credentials.properties")
-    private static class WebdavFactory extends Factory {
-        WebdavFactory(URI uri) {
-            super(uri);
-        }
-        @Override
-        public Session<?> getSession() throws IOException {
-            try {
-                Credentials credentials = new Credentials(username, password);
-                final Host host = new Host(new DAVSSLProtocol(), this.host, port != null ? Integer.parseInt(port) : -1, uri.getPath(), credentials);
-                final DAVSession session = new DAVSession(host);
-                session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-                session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-                return session;
-            } catch (BackgroundException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-    }
-
     /**
-     * @param uri "cyberduck:protocol:///?id=alias", sub url (after "cyberduck:") parts will be replaced by properties.
+     * @param uri "cyberduck:protocol:///?alias=alias", sub url (after "cyberduck:") parts will be replaced by properties.
+     *            if you don't use alias, the url must include username, password, host, port.
      */
     @Nonnull
     @Override
@@ -117,16 +52,13 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
 Debug.println("protocol: " + protocol);
 
         Map<String, String> params = getParamsMap(subUri);
-        if (!params.containsKey(CyberduckFileSystemProvider.PARAM_ID)) {
-            throw new NoSuchElementException("uri not contains a param " + CyberduckFileSystemProvider.PARAM_ID);
-        }
-        final String alias = params.get(CyberduckFileSystemProvider.PARAM_ID);
+        String alias = params.get(CyberduckFileSystemProvider.PARAM_ALIAS);
 
-        Factory factory = Factory.getFactory(subUri);
-        PropsEntity.Util.bind(factory, alias);
-        Session<?> session = factory.getSession();
+        CyberduckAuthenticator authenticator = CyberduckAuthenticator.getAuthenticator(subUri);
+        CyberduckCredential credential = authenticator.getCredential(alias, subUri);
+        Session<?> session = authenticator.authorize(credential);
 
-        final CyberduckFileStore fileStore = new CyberduckFileStore(session, factoryProvider.getAttributesFactory());
+        CyberduckFileStore fileStore = new CyberduckFileStore(session, factoryProvider.getAttributesFactory());
         return new CyberduckFileSystemDriver(fileStore, factoryProvider, session, env);
     }
 
