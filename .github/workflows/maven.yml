@@ -22,8 +22,9 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       env:
-        TEST_ACCOUNT : ${{ secrets.TEST_ACCOUNT }}
-        TEST_PASSWORD : ${{ secrets.TEST_PASSWORD }}
-        TEST_HOST : ${{ secrets.TEST_HOST }}
-        TEST_PORT : ${{ secrets.TEST_PORT }}
+        TEST_WEBDAV_ACCOUNT : ${{ secrets.TEST_WEBDAV_ACCOUNT }}
+        TEST_WEBDAV_PASSWORD : ${{ secrets.TEST_WEBDAV_PASSWORD }}
+        TEST_WEBDAV_HOST : ${{ secrets.TEST_WEBDAV_HOST }}
+        TEST_WEBDAV_PORT : ${{ secrets.TEST_WEBDAV_PORT }}
+        TEST_WEBDAV_PATH : ${{ secrets.TEST_WEBDAV_PATH }}
       run: mvn -B package --file pom.xml

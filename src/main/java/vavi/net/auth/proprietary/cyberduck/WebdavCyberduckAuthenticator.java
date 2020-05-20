@@ -65,7 +65,7 @@ Debug.println("credential: by uri");
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             return session;
         } catch (BackgroundException e) {
-            throw new IllegalStateException(e);
+            throw new IOException(e);
         }
     }
 }

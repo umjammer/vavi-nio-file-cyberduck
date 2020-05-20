@@ -131,7 +131,7 @@ Debug.println("entries: " + entries.size());
                     cache.putFile(path, entry);
                     return entry;
                 } catch (BackgroundException e) {
-                    throw new IllegalStateException(e);
+                    throw new IOException(e);
                 }
             }
         }
@@ -151,7 +151,7 @@ Debug.println("entries: " + entries.size());
             final Read read = session._getFeature(Read.class);
             return read.read(entry, new TransferStatus(), new DisabledConnectionCallback());
         } catch (BackgroundException e) {
-            throw new IllegalStateException(e);
+            throw new IOException(e);
         }
     }
 
@@ -205,7 +205,7 @@ Debug.println("newOutputStream: " + e.getMessage());
                     ch.cyberduck.core.Path newEntry = cache.getEntry(path);
                     cache.addEntry(path, newEntry);
                 } catch (BackgroundException e) {
-                    throw new IllegalStateException(e);
+                    throw new IOException(e);
                 }
             }
         };
@@ -276,7 +276,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
             ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, null, new TransferStatus());
             cache.addEntry(dir, newEntry);
         } catch (BackgroundException e) {
-            throw new IllegalStateException(e);
+            throw new IOException(e);
         }
     }
 
@@ -366,7 +366,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
         try {
             session.close();
         } catch (BackgroundException e) {
-            throw new IllegalStateException(e);
+            throw new IOException(e);
         }
     }
 
@@ -407,7 +407,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
                 }
                 cache.putFolder(dir, list);
             } catch (BackgroundException e) {
-                throw new IllegalStateException(e);
+                throw new IOException(e);
             }
         }
 
@@ -431,7 +431,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
 
             cache.removeEntry(path);
         } catch (BackgroundException e) {
-            throw new IllegalStateException(e);
+            throw new IOException(e);
         }
     }
 
@@ -447,7 +447,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
 
                 cache.addEntry(target, newEntry);
             } catch (BackgroundException e) {
-                throw new IllegalStateException(e);
+                throw new IOException(e);
             }
         } else if (sourceEntry.isDirectory()) {
             // TODO java spec. allows empty folder
@@ -481,7 +481,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
                     cache.addEntry(target, newEntry);
                 }
             } catch (BackgroundException e) {
-                throw new IllegalStateException(e);
+                throw new IOException(e);
             }
         } else if (sourceEntry.isDirectory()) {
             // TODO java spec. allows empty folder
@@ -502,7 +502,7 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
             cache.removeEntry(source);
             cache.addEntry(target, patchedEntry);
         } catch (BackgroundException e) {
-            throw new IllegalStateException(e);
+            throw new IOException(e);
         }
     }
 }

@@ -3,13 +3,17 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-nio-file-cyberduck</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
 
   <url>https://github.com/umjammer/vavi-nio-file-cyberduck</url>
   <scm>
     <url>https://github.com/umjammer/vavi-nio-file-cyberduck</url>
   </scm>
   <name>vavi-nio-file-cyberduck</name>
+
+  <properties>
+    <cyberduck.version>7.0.1</cyberduck.version>
+  </properties>
 
   <profiles>
     <profile>
@@ -23,6 +27,9 @@
           <value>!true</value>
         </property>
       </activation>
+      <properties>
+        <project.build.testResources.testResource.directory>src/test/resources</project.build.testResources.testResource.directory>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -49,10 +56,16 @@
             <version>2.22.2</version>
             <configuration>
               <environmentVariables>
-                <TEST_ACCOUNT>${test.account}</TEST_ACCOUNT>
-                <TEST_PASSWORD>${test.password}</TEST_PASSWORD>
-                <TEST_HOST>${test.host}</TEST_HOST>
-                <TEST_PORT>${test.port}</TEST_PORT>
+                <TEST_WEBDAV_ACCOUNT>${test.webdav.account}</TEST_WEBDAV_ACCOUNT>
+                <TEST_WEBDAV_PASSWORD>${test.webdav.password}</TEST_WEBDAV_PASSWORD>
+                <TEST_WEBDAV_HOST>${test.webdav.host}</TEST_WEBDAV_HOST>
+                <TEST_WEBDAV_PORT>${test.webdav.port}</TEST_WEBDAV_PORT>
+                <TEST_WEBDAV_PATH>${test.webdav.path}</TEST_WEBDAV_PATH>
+                <TEST_SFTP_ACCOUNT>${test.sftp.account}</TEST_SFTP_ACCOUNT>
+                <TEST_SFTP_PASSPHRASE>${test.sftp.passPhrase}</TEST_SFTP_PASSPHRASE>
+                <TEST_SFTP_HOST>${test.sftp.host}</TEST_SFTP_HOST>
+                <TEST_SFTP_KEYPATH>${test.sftp.keyPath}</TEST_SFTP_KEYPATH>
+                <TEST_SFTP_PATH>${test.sftp.path}</TEST_SFTP_PATH>
               </environmentVariables>
               <argLine>-Djava.util.logging.config.file=${project.build.testResources.testResource.directory}/logging.properties</argLine>
               <trimStackTrace>false</trimStackTrace>
@@ -112,12 +125,17 @@
     <dependency>
       <groupId>ch.cyberduck</groupId>
       <artifactId>core</artifactId>
-      <version>7.0.1</version>
+      <version>${cyberduck.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.cyberduck</groupId>
       <artifactId>webdav</artifactId>
-      <version>7.0.1</version>
+      <version>${cyberduck.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.cyberduck</groupId>
+      <artifactId>ssh</artifactId>
+      <version>${cyberduck.version}</version>
     </dependency>
 
     <dependency>

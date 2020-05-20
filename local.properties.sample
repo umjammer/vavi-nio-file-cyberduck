@@ -1,4 +1,10 @@
-test.account=
-test.password=
-test.host=
-test.port=
+test.webdav.account=
+test.webdav.password=
+test.webdav.host=
+test.webdav.port=
+test.webdav.path=
+test.sftp.account=
+test.sftp.passPhrase=
+test.sftp.host=
+test.sftp.keyPath=
+test.sftp.path=

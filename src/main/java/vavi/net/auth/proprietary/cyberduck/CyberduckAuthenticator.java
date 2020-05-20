@@ -29,6 +29,7 @@ public interface CyberduckAuthenticator extends Authenticator<CyberduckCredentia
         String scheme = uri.getScheme();
         switch (scheme) {
         case "webdav": return new WebdavCyberduckAuthenticator();
+        case "sftp": return new SftpCyberduckAuthenticator();
         default: throw new IllegalArgumentException(scheme);
         }
     }

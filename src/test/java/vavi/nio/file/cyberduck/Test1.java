@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 import static vavi.nio.file.Base.testAll;
 
@@ -42,20 +43,46 @@ class Test1 {
     /**
      * environment variable
      * <ul>
-     * <li> TEST_ACCOUNT
-     * <li> TEST_PASSWORD
-     * <li> TEST_HOST
-     * <li> TEST_PORT
+     * <li> TEST_WEBDAV_ACCOUNT
+     * <li> TEST_WEBDAV_PASSWORD
+     * <li> TEST_WEBDAV_HOST
+     * <li> TEST_WEBDAV_PORT
+     * <li> TEST_WEBDAV_PATH
      * </ul>
      */
     @Test
     void test01() throws Exception {
-        String username = URLEncoder.encode(System.getenv("TEST_ACCOUNT"), "utf-8");
-        String password = System.getenv("TEST_PASSWORD");
-        String host = System.getenv("TEST_HOST");
-        String port = System.getenv("TEST_PORT");
+        String username = URLEncoder.encode(System.getenv("TEST_WEBDAV_ACCOUNT"), "utf-8");
+        String password = System.getenv("TEST_WEBDAV_PASSWORD");
+        String host = System.getenv("TEST_WEBDAV_HOST");
+        String port = System.getenv("TEST_WEBDAV_PORT");
+        String path = System.getenv("TEST_WEBDAV_PATH");
 
-        URI uri = URI.create(String.format("cyberduck:webdav://%s:%s@%s:%s/dav", username, password, host, port));
+        URI uri = URI.create(String.format("cyberduck:webdav://%s:%s@%s:%s%s", username, password, host, port, path));
+
+        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP));
+    }
+
+    /**
+     * environment variable
+     * <ul>
+     * <li> TEST_SFTP_ACCOUNT
+     * <li> TEST_SFTP_PASSPHRASE
+     * <li> TEST_SFTP_HOST
+     * <li> TEST_SFTP_KEYPATH
+     * <li> TEST_SFTP_PATH
+     * </ul>
+     */
+    @Test
+    @DisabledIfEnvironmentVariable(named = "GITHUB_WORKFLOW", matches = ".*")
+    void test02() throws Exception {
+        String username = URLEncoder.encode(System.getenv("TEST_SFTP_ACCOUNT"), "utf-8");
+        String passPhrase = System.getenv("TEST_SFTP_PASSPHRASE");
+        String host = System.getenv("TEST_SFTP_HOST");
+        String keyPath = System.getenv("TEST_SFTP_KEYPATH");
+        String path = System.getenv("TEST_SFTP_PATH");
+
+        URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
 
         testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP));
     }

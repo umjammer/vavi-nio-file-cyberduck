@@ -40,13 +40,12 @@ public class CyberduckCredential implements UserCredential, AppCredential {
 
     /** */
     public CyberduckCredential(URI uri) {
-//Debug.println(uri);
         this.scheme = uri.getScheme();
         String[] userInfo = uri.getUserInfo() != null ? uri.getUserInfo().split(":") : null;
         if (userInfo != null && !userInfo[0].isEmpty()) {
             this.username = userInfo[0];
         }
-        if (userInfo != null && !userInfo[1].isEmpty()) {
+        if (userInfo != null && userInfo.length > 1 && !userInfo[1].isEmpty()) {
             this.password = userInfo[1];
         }
         if (uri.getHost() != null && !uri.getHost().isEmpty()) {
@@ -93,12 +92,14 @@ public class CyberduckCredential implements UserCredential, AppCredential {
         return password;
     }
 
+    /** */
     public String getHost() {
         return host;
     }
 
+    /** default 80 */
     public int getPort() {
-        return port;
+        return port == -1 ? 80 : port;
     }
 }
 

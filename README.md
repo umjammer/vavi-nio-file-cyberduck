@@ -8,7 +8,8 @@ A Java NIO FileSystem implementation over Cyberduck.
 
 | fs                     | list | upload | download | copy | move | rm | mkdir | cache | watch | library |
 |------------------------|------|--------|----------|------|------|----|-------|-------|-------|---------|
-| cyberduck (webdav ssl) | ✅    | ✅     | ✅       | ✅   | ✅   | ✅ | ✅    | ✅    |       | [cyberduck](https://github.com/iterate-ch/cyberduck) |
+| cyberduck (webdav ssl) | ✅   | ✅    | ✅       | ✅   | ✅  | ✅ | ✅   | ✅   |       | [cyberduck.webdav](https://github.com/iterate-ch/cyberduck/webdav) |
+| cyberduck (sftp      ) | ✅   | ✅    | ✅       | ✅   | ✅  | ✅ | ✅   | ✅   |       | [cyberduck.ssh](https://github.com/iterate-ch/cyberduck/ssh) |
 
 ## Install
 
@@ -35,9 +36,10 @@ https://github.com/umjammer/vavi-nio-file-cyberduck/blob/master/src/test/java/va
 ```shell
 $ cp local.properties.sample local.properties
 $ vi local.properties
-test.account=your_webdav@account.com
-test.password=your_webdav_password
-test.host=your_webdav_host
-test.port=your_webdav_port
+test.webdav.account=your_webdav@account.com
+test.webdav.password=your_webdav_password
+test.webdav.host=your_webdav_host
+test.webdav.port=your_webdav_port
+test.webdav.path=/your_webdav_path
 $ mvn test
 ```
