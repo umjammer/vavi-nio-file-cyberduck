@@ -35,7 +35,7 @@ class Test1 {
         Map<String, Object> env = new HashMap<>();
 
         FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, env);
-        // TODO virtual root directory 'dav' douesn't work
+        // TODO virtual root directory 'dav' doesn't work
         Files.list(fs.getPath("/dav")).forEach(System.err::println);
         Files.list(fs.getPath("/dav/Books/IT")).forEach(System.err::println);
     }

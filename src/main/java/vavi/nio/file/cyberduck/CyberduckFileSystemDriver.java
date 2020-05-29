@@ -190,8 +190,9 @@ Debug.println("newOutputStream: " + e.getMessage());
 
         return new OutputStreamForUploading() {
             @Override
-            protected void upload(InputStream is) throws IOException {
+            protected void onClosed() throws IOException {
                 try {
+                    InputStream is = getInputStream();
                     final Write<?> write = session._getFeature(Write.class);
                     TransferStatus status =  new TransferStatus();
                     status.setOffset(0);
