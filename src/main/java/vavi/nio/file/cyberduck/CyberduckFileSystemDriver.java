@@ -6,11 +6,9 @@
 
 package vavi.nio.file.cyberduck;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AccessMode;
@@ -44,17 +42,19 @@ import com.github.fge.filesystem.exceptions.IsDirectoryException;
 import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 
 import vavi.nio.file.Cache;
+import vavi.nio.file.UploadMonitor;
 import vavi.nio.file.Util;
 import vavi.nio.file.Util.OutputStreamForUploading;
 import vavi.util.Debug;
 
 import static vavi.nio.file.Util.toFilenameString;
-import static vavi.nio.file.Util.toPathString;
 
+import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -92,6 +92,30 @@ public final class CyberduckFileSystemDriver extends UnixLikeFileSystemDriverBas
         ignoreAppleDouble = (Boolean) ((Map<String, Object>) env).getOrDefault("ignoreAppleDouble", Boolean.FALSE);
 //System.err.println("ignoreAppleDouble: " + ignoreAppleDouble);
     }
+
+    /** */
+    private UploadMonitor uploadMonitor = new UploadMonitor();
+
+    /** entry for uploading (for attributes) */
+    private static final ch.cyberduck.core.Path dummy = new ch.cyberduck.core.Path("vavi-nio-file.cyberduck.dummy", EnumSet.noneOf(Type.class)) {
+        public boolean isFile() {
+            return true;
+        }
+        public boolean isDirectory() {
+            return false;
+        }
+        PathAttributes attributes = new PathAttributes() {
+            public long getModificationDate() {
+                return 0;
+            }
+            public long getSize() {
+                return 0;
+            }
+        };
+        public PathAttributes attributes() {
+            return attributes;
+        }
+    };
 
     /** TODO cyberduck has cache? */
     private Cache<ch.cyberduck.core.Path> cache = new Cache<ch.cyberduck.core.Path>() {
@@ -155,23 +179,6 @@ Debug.println("entries: " + entries.size());
         }
     }
 
-    /**
-     * fuse からだと
-     * <ol>
-     *  <li>create -> newByteChannel
-     *  <li>flush -> n/a
-     *  <li>lock -> n/a
-     *  <li>release -> byteChannel.close
-     * </ol>
-     * と呼ばれる <br/>
-     * 元のファイルが取れない... <br/>
-     * 書き込みの指示もない...
-     * <p>
-     * nio.file からだと
-     * <pre>
-     *  newOutputStream -> write(2)
-     * </pre>
-     */
     @Nonnull
     @Override
     public OutputStream newOutputStream(final Path path, final Set<? extends OpenOption> options) throws IOException {
@@ -224,6 +231,7 @@ Debug.println("newOutputStream: " + e.getMessage());
                                               Set<? extends OpenOption> options,
                                               FileAttribute<?>... attrs) throws IOException {
         if (options != null && Util.isWriting(options)) {
+            uploadMonitor.start(path);
             return new Util.SeekableByteChannelForWriting(newOutputStream(path, options)) {
                 @Override
                 protected long getLeftOver() throws IOException {
@@ -236,19 +244,9 @@ Debug.println("newOutputStream: " + e.getMessage());
                     }
                     return leftover;
                 }
-
                 @Override
                 public void close() throws IOException {
-System.out.println("SeekableByteChannelForWriting::close");
-                    if (written == 0) {
-                        // TODO no mean
-System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
-                        java.io.File file = new java.io.File(toPathString(path));
-                        FileInputStream fis = new FileInputStream(file);
-                        FileChannel fc = fis.getChannel();
-                        fc.transferTo(0, file.length(), this);
-                        fis.close();
-                    }
+                    uploadMonitor.finish(path);
                     super.close();
                 }
             };
@@ -348,6 +346,11 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
      */
     @Override
     public void checkAccess(final Path path, final AccessMode... modes) throws IOException {
+        if (uploadMonitor.isUploading(path)) {
+Debug.println("uploading... : " + path);
+            return;
+        }
+
         final ch.cyberduck.core.Path entry = cache.getEntry(path);
 
         if (!entry.isFile()) {
@@ -377,6 +380,11 @@ System.out.println("SeekableByteChannelForWriting::close: scpecial: " + path);
     @Nonnull
     @Override
     public Object getPathMetadata(final Path path) throws IOException {
+        if (uploadMonitor.isUploading(path)) {
+Debug.println("uploading... : " + path);
+            return dummy;
+        }
+
         return cache.getEntry(path);
     }
 
