@@ -8,8 +8,8 @@ A Java NIO FileSystem implementation over Cyberduck.
 
 | fs                     | list | upload | download | copy | move | rm | mkdir | cache | watch | library |
 |------------------------|------|--------|----------|------|------|----|-------|-------|-------|---------|
-| cyberduck (webdav ssl) | ✅   | ✅    | ✅       | ✅   | ✅  | ✅ | ✅   | ✅   |       | [cyberduck.webdav](https://github.com/iterate-ch/cyberduck/webdav) |
-| cyberduck (sftp)       | ✅   | ✅    | ✅       | ✅   | ✅  | ✅ | ✅   | ✅   |       | [cyberduck.ssh](https://github.com/iterate-ch/cyberduck/ssh) |
+| cyberduck (webdav ssl) | ✅   | ✅    | ✅       | ✅   | ✅  | ✅ | ✅   | ✅   |       | [cyberduck.webdav](https://github.com/iterate-ch/cyberduck/) |
+| cyberduck (sftp)       | ✅   | ✅    | ✅       | ✅   | ✅  | ✅ | ✅   | ✅   |       | [cyberduck.ssh](https://github.com/iterate-ch/cyberduck/) |
 
 ## Install
 
