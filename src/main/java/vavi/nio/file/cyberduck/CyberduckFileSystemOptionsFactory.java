@@ -21,6 +21,8 @@ public class CyberduckFileSystemOptionsFactory extends FileSystemOptionsFactory 
 
     public CyberduckFileSystemOptionsFactory() {
         addLinkOption(LinkOption.NOFOLLOW_LINKS);
+        addCopyOption(new CyberduckUploadOption(null));
+        addWriteOpenOption(new CyberduckUploadOption(null));
     }
 }
 

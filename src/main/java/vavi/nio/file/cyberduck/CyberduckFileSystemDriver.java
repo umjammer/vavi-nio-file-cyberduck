@@ -6,9 +6,11 @@
 
 package vavi.nio.file.cyberduck;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AccessMode;
@@ -17,6 +19,7 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileStore;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
@@ -64,7 +67,6 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -195,28 +197,51 @@ Debug.println("newOutputStream: " + e.getMessage());
 //new Exception("*** DUMMY ***").printStackTrace();
         }
 
-        return new OutputStreamForUploading() {
-            @Override
-            protected void onClosed() throws IOException {
-                try {
+        CyberduckUploadOption uploadOption = Util.getOneOfOptions(CyberduckUploadOption.class, options);
+        if (uploadOption != null) {
+            // java.nio.file is highly abstracted, so here source information is lost.
+            // but cyberduck requires content length for upload? (TODO).
+            // so reluctantly we provide {@link CyberduckUploadOption} for {@link java.nio.file.Files#copy} options.
+            Path source = uploadOption.getSource();
+Debug.println("upload w/ option: " + source);
+            return new OutputStreamForUploading(uploadEntry(path, Files.size(source))) {
+                @Override
+                protected void onClosed() throws IOException {
+                    ch.cyberduck.core.Path newEntry = cache.getEntry(path);
+                    cache.addEntry(path, newEntry);
+                }
+            };
+        } else {
+Debug.println("upload w/o option");
+            return new OutputStreamForUploading() {
+                @Override
+                protected void onClosed() throws IOException {
                     InputStream is = getInputStream();
-                    final Write<?> write = session._getFeature(Write.class);
-                    TransferStatus status =  new TransferStatus();
-                    status.setOffset(0);
-                    status.setLength(is.available());
-                    ch.cyberduck.core.Path parentEntry = cache.getEntry(path.getParent());
-                    ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(path), EnumSet.of(ch.cyberduck.core.Path.Type.file));
-                    StatusOutputStream<?> os = write.write(preEntry, status, new DisabledConnectionCallback());
+                    OutputStream os = uploadEntry(path, is.available());
                     IOUtils.copyLarge(is, os);
                     is.close();
                     os.close();
+
                     ch.cyberduck.core.Path newEntry = cache.getEntry(path);
                     cache.addEntry(path, newEntry);
-                } catch (BackgroundException e) {
-                    throw new IOException(e);
                 }
-            }
-        };
+            };
+        }
+    }
+
+    /** */
+    private OutputStream uploadEntry(Path path, long size) throws IOException {
+        try {
+            final Write<?> write = session._getFeature(Write.class);
+            TransferStatus status =  new TransferStatus();
+            status.setOffset(0);
+            status.setLength(size); // TODO seems to work w/o size (sftp)
+            ch.cyberduck.core.Path parentEntry = cache.getEntry(path.getParent());
+            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(path), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+            return new BufferedOutputStream(write.write(preEntry, status, new DisabledConnectionCallback()));
+        } catch (BackgroundException e) {
+            throw new IOException(e);
+        }
     }
 
     @Nonnull
@@ -259,6 +284,23 @@ Debug.println("newOutputStream: " + e.getMessage());
                 @Override
                 protected long getSize() throws IOException {
                     return entry.attributes().getSize();
+                }
+                @Override
+                public int read(ByteBuffer dst) throws IOException {
+                    try {
+                        return super.read(dst);
+                    } catch (NullPointerException e) {
+                        /*
+                         * TODO bug?
+java.lang.NullPointerException
+    at net.schmizz.sshj.sftp.RemoteFile$ReadAheadRemoteFileInputStream.retrieveUnconfirmedRead(RemoteFile.java:252)
+    at net.schmizz.sshj.sftp.RemoteFile$ReadAheadRemoteFileInputStream.available(RemoteFile.java:331)
+    at java.nio.channels.Channels$ReadableByteChannelImpl.read(Channels.java:381)
+    at vavi.nio.file.Util$SeekableByteChannelForReading.read(Util.java:203)
+    at vavi.nio.file.cyberduck.CyberduckFileSystemDriver$6.read(CyberduckFileSystemDriver.java:291)
+                         */
+                        return 0;
+                    }
                 }
             };
         }
