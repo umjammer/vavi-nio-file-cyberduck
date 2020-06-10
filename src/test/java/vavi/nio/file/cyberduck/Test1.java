@@ -10,12 +10,15 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+
+import vavi.util.Debug;
 
 import static vavi.nio.file.Base.testAll;
 
@@ -28,16 +31,18 @@ import static vavi.nio.file.Base.testAll;
  */
 class Test1 {
 
+    // TODO Debug doesn't work why???
     public static void main(String[] args) throws Exception {
 
         URI uri = URI.create("cyberduck:webdav:///dav?alias=" + "boxdav");
 
         Map<String, Object> env = new HashMap<>();
-
         FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, env);
-        // TODO virtual root directory 'dav' doesn't work
-        Files.list(fs.getPath("/dav")).forEach(System.err::println);
-        Files.list(fs.getPath("/dav/Books/IT")).forEach(System.err::println);
+        Path root = fs.getRootDirectories().iterator().next();
+Debug.println(root.toString());
+        Files.list(root).forEach(System.err::println);
+Debug.println("---");
+        Files.list(root.resolve("Books/IT")).forEach(System.err::println);
     }
 
     /**
