@@ -25,7 +25,7 @@ import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
@@ -40,24 +40,21 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.apache.commons.io.IOUtils;
 
-import com.github.fge.filesystem.driver.UnixLikeFileSystemDriverBase;
+import com.github.fge.filesystem.driver.ExtendedFileSystemDriverBase;
 import com.github.fge.filesystem.exceptions.IsDirectoryException;
 import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 
 import vavi.nio.file.Cache;
-import vavi.nio.file.UploadMonitor;
 import vavi.nio.file.Util;
 import vavi.nio.file.Util.OutputStreamForUploading;
 import vavi.util.Debug;
 
 import static vavi.nio.file.Util.toFilenameString;
 
-import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -79,7 +76,7 @@ import ch.cyberduck.ui.browser.SearchFilter;
  * @version 0.00 2016/03/11 umjammer initial version <br>
  */
 @ParametersAreNonnullByDefault
-public final class CyberduckFileSystemDriver extends UnixLikeFileSystemDriverBase {
+public final class CyberduckFileSystemDriver extends ExtendedFileSystemDriverBase {
 
     private final Session<?> session;
     private boolean ignoreAppleDouble = false;
@@ -94,30 +91,6 @@ public final class CyberduckFileSystemDriver extends UnixLikeFileSystemDriverBas
         ignoreAppleDouble = (Boolean) ((Map<String, Object>) env).getOrDefault("ignoreAppleDouble", Boolean.FALSE);
 //System.err.println("ignoreAppleDouble: " + ignoreAppleDouble);
     }
-
-    /** */
-    private UploadMonitor uploadMonitor = new UploadMonitor();
-
-    /** entry for uploading (for attributes) */
-    private static final ch.cyberduck.core.Path dummy = new ch.cyberduck.core.Path("vavi-nio-file.cyberduck.dummy", EnumSet.noneOf(Type.class)) {
-        public boolean isFile() {
-            return true;
-        }
-        public boolean isDirectory() {
-            return false;
-        }
-        PathAttributes attributes = new PathAttributes() {
-            public long getModificationDate() {
-                return 0;
-            }
-            public long getSize() {
-                return 0;
-            }
-        };
-        public PathAttributes attributes() {
-            return attributes;
-        }
-    };
 
     /** TODO cyberduck has cache? */
     private Cache<ch.cyberduck.core.Path> cache = new Cache<ch.cyberduck.core.Path>() {
@@ -256,34 +229,16 @@ Debug.println("upload w/o option");
                                               Set<? extends OpenOption> options,
                                               FileAttribute<?>... attrs) throws IOException {
         if (options != null && Util.isWriting(options)) {
-            uploadMonitor.start(path);
-            return new Util.SeekableByteChannelForWriting(newOutputStream(path, options)) {
-                @Override
-                protected long getLeftOver() throws IOException {
-                    long leftover = 0;
-                    if (options.contains(StandardOpenOption.APPEND)) {
-                        ch.cyberduck.core.Path entry = cache.getEntry(path);
-                        if (entry != null && entry.attributes().getSize() >= 0) {
-                            leftover = entry.attributes().getSize();
-                        }
-                    }
-                    return leftover;
-                }
-                @Override
-                public void close() throws IOException {
-                    uploadMonitor.finish(path);
-                    super.close();
-                }
-            };
+            return super.newByteChannel(path, options, attrs);
         } else {
-            ch.cyberduck.core.Path entry = cache.getEntry(path);
-            if (entry.isDirectory()) {
+            BasicFileAttributes attributes = readAttributes(path, BasicFileAttributes.class);
+            if (attributes.isDirectory()) {
                 throw new IsDirectoryException(path.toString());
             }
             return new Util.SeekableByteChannelForReading(newInputStream(path, null)) {
                 @Override
                 protected long getSize() throws IOException {
-                    return entry.attributes().getSize();
+                    return attributes.size();
                 }
                 @Override
                 public int read(ByteBuffer dst) throws IOException {
@@ -387,12 +342,7 @@ java.lang.NullPointerException
      * @see FileSystemProvider#checkAccess(Path, AccessMode...)
      */
     @Override
-    public void checkAccess(final Path path, final AccessMode... modes) throws IOException {
-        if (uploadMonitor.isUploading(path)) {
-Debug.println("uploading... : " + path);
-            return;
-        }
-
+    protected void checkAccessImpl(final Path path, final AccessMode... modes) throws IOException {
         final ch.cyberduck.core.Path entry = cache.getEntry(path);
 
         if (!entry.isFile()) {
@@ -421,12 +371,7 @@ Debug.println("uploading... : " + path);
      */
     @Nonnull
     @Override
-    public Object getPathMetadata(final Path path) throws IOException {
-        if (uploadMonitor.isUploading(path)) {
-Debug.println("uploading... : " + path);
-            return dummy;
-        }
-
+    protected Object getPathMetadataImpl(final Path path) throws IOException {
         return cache.getEntry(path);
     }
 
