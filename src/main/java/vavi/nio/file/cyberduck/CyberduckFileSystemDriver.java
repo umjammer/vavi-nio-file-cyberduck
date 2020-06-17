@@ -418,9 +418,9 @@ Debug.println("upload w/o option");
      * @param targetIsParent if the target is folder
      */
     private void moveEntry(final Path source, final Path target, boolean targetIsParent) throws IOException {
+        try {
         ch.cyberduck.core.Path sourceEntry = cache.getEntry(source);
         if (sourceEntry.isFile()) {
-            try {
                 ch.cyberduck.core.Path targetParentEntry = cache.getEntry(targetIsParent ? target : target.getParent());
                 ch.cyberduck.core.Path preEntry;
                 if (targetIsParent) {
@@ -439,13 +439,18 @@ Debug.println("upload w/o option");
                     ch.cyberduck.core.Path newEntry = cache.getEntry(target); // TODO
                     cache.addEntry(target, newEntry);
                 }
+            } else if (sourceEntry.isDirectory()) {
+                ch.cyberduck.core.Path targetParentEntry = cache.getEntry(target.getParent());
+                ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+                final Move move = session._getFeature(Move.class);
+                // TODO why cannot use move() return like copy or rename
+                move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                ch.cyberduck.core.Path newEntry = cache.getEntry(target); // TODO
+                cache.moveEntry(source, target, newEntry);
+            }
             } catch (BackgroundException e) {
                 throw new IOException(e);
             }
-        } else if (sourceEntry.isDirectory()) {
-            // TODO java spec. allows empty folder
-            throw new IsDirectoryException("source can not be a folder: " + source);
-        }
     }
 
     /** */
