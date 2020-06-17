@@ -10,8 +10,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AccessMode;
 import java.nio.file.CopyOption;
@@ -25,7 +23,6 @@ import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
@@ -223,42 +220,7 @@ Debug.println("upload w/o option");
     public DirectoryStream<Path> newDirectoryStream(final Path dir,
                                                     final DirectoryStream.Filter<? super Path> filter) throws IOException {
         return Util.newDirectoryStream(getDirectoryEntries(dir), filter);
-    }
-
-    @Override
-    public SeekableByteChannel newByteChannel(Path path,
-                                              Set<? extends OpenOption> options,
-                                              FileAttribute<?>... attrs) throws IOException {
-        if (options != null && Util.isWriting(options)) {
-            return super.newByteChannel(path, options, attrs);
         } else {
-            BasicFileAttributes attributes = readAttributes(path, BasicFileAttributes.class);
-            if (attributes.isDirectory()) {
-                throw new IsDirectoryException(path.toString());
-            }
-            return new Util.SeekableByteChannelForReading(newInputStream(path, null)) {
-                @Override
-                protected long getSize() throws IOException {
-                    return attributes.size();
-                }
-                @Override
-                public int read(ByteBuffer dst) throws IOException {
-                    try {
-                        return super.read(dst);
-                    } catch (NullPointerException e) {
-                        /*
-                         * TODO bug?
-java.lang.NullPointerException
-    at net.schmizz.sshj.sftp.RemoteFile$ReadAheadRemoteFileInputStream.retrieveUnconfirmedRead(RemoteFile.java:252)
-    at net.schmizz.sshj.sftp.RemoteFile$ReadAheadRemoteFileInputStream.available(RemoteFile.java:331)
-    at java.nio.channels.Channels$ReadableByteChannelImpl.read(Channels.java:381)
-    at vavi.nio.file.Util$SeekableByteChannelForReading.read(Util.java:203)
-    at vavi.nio.file.cyberduck.CyberduckFileSystemDriver$6.read(CyberduckFileSystemDriver.java:291)
-                         */
-                        return 0;
-                    }
-                }
-            };
         }
     }
 
