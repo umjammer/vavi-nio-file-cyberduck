@@ -46,7 +46,6 @@ import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 
 import vavi.nio.file.Cache;
 import vavi.nio.file.Util;
-import vavi.nio.file.Util.OutputStreamForUploading;
 import vavi.util.Debug;
 
 import static vavi.nio.file.Util.toFilenameString;
@@ -148,6 +147,7 @@ Debug.println("entries: " + entries.size());
 
         try {
             final Read read = session._getFeature(Read.class);
+            // this is best performance
             return read.read(entry, new TransferStatus(), new DisabledConnectionCallback());
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -177,7 +177,7 @@ Debug.println("newOutputStream: " + e.getMessage());
             // so reluctantly we provide {@link CyberduckUploadOption} for {@link java.nio.file.Files#copy} options.
             Path source = uploadOption.getSource();
 Debug.println("upload w/ option: " + source);
-            return new OutputStreamForUploading(uploadEntry(path, Files.size(source))) {
+            return new Util.OutputStreamForUploading(uploadEntry(path, Files.size(source))) {
                 @Override
                 protected void onClosed() throws IOException {
                     ch.cyberduck.core.Path newEntry = cache.getEntry(path);
@@ -186,7 +186,7 @@ Debug.println("upload w/ option: " + source);
             };
         } else {
 Debug.println("upload w/o option");
-            return new OutputStreamForUploading() {
+            return new Util.OutputStreamForUploading() {
                 @Override
                 protected void onClosed() throws IOException {
                     InputStream is = getInputStream();
@@ -211,6 +211,7 @@ Debug.println("upload w/o option");
             status.setLength(size); // TODO seems to work w/o size (sftp)
             ch.cyberduck.core.Path parentEntry = cache.getEntry(path.getParent());
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(path), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+            // this is best performance
             return new BufferedOutputStream(write.write(preEntry, status, new DisabledConnectionCallback()));
         } catch (BackgroundException e) {
             throw new IOException(e);
