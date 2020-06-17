@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+  <appender name="ROOT" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.err" /> 
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} [%p] %m%n at %t%x %c.%M(%F:%L)%n" />
+<!--
+      <param name="ConversionPattern" value="\u001b[0;37m%d{ISO8601}\u001b[m [%p] %m%n \u001b[0;37mat %t%x %c.%M(%F:%L)\u001b[m\n" />
+-->
+    </layout>
+  </appender>
+
+  <category name="ch.cyberduck" additivity="true">
+    <level value="warn" />
+    <appender-ref ref="ROOT" />
+  </category>
+
+  <root>
+    <level value ="info" />
+    <appender-ref ref="ROOT"/>
+  </root>
+
+</log4j:configuration>

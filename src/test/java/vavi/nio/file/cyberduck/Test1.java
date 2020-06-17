@@ -31,7 +31,6 @@ import static vavi.nio.file.Base.testAll;
  */
 class Test1 {
 
-    // TODO Debug doesn't work why???
     public static void main(String[] args) throws Exception {
 
         URI uri = URI.create("cyberduck:webdav:///dav?alias=" + "boxdav");
