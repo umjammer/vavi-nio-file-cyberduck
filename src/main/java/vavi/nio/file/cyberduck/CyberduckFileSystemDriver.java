@@ -219,9 +219,14 @@ Debug.println("upload w/o option");
     @Override
     public DirectoryStream<Path> newDirectoryStream(final Path dir,
                                                     final DirectoryStream.Filter<? super Path> filter) throws IOException {
-        return Util.newDirectoryStream(getDirectoryEntries(dir), filter);
+        List<Path> list = null;
+        if (cache.containsFolder(dir)) {
+            list = cache.getFolder(dir);
         } else {
+            list = getDirectoryEntries(dir);
         }
+
+        return Util.newDirectoryStream(list, filter);
     }
 
     @Override
@@ -340,51 +345,48 @@ Debug.println("upload w/o option");
 
     /** */
     private List<Path> getDirectoryEntries(Path dir) throws IOException {
-        final ch.cyberduck.core.Path entry = cache.getEntry(dir);
+        try {
+            final ch.cyberduck.core.Path entry = cache.getEntry(dir);
 
-        if (!entry.isDirectory()) {
-//System.err.println(entry.name + ", " + entry.id + ", " + entry.hashCode());
-            throw new NotDirectoryException(dir.toString());
-        }
+            if (!entry.isDirectory()) {
+    //System.err.println(entry.name + ", " + entry.id + ", " + entry.hashCode());
+                throw new NotDirectoryException(dir.toString());
+            }
 
-        List<Path> list = null;
-        if (cache.containsFolder(dir)) {
-            list = cache.getFolder(dir);
-        } else {
-            list = new ArrayList<>();
+            List<Path> list = new ArrayList<>();
 
-            try {
-                final ListService listService = session._getFeature(ListService.class);
-                AttributedList<ch.cyberduck.core.Path> children = listService.list(entry, new DisabledListProgressListener());
+            final ListService listService = session._getFeature(ListService.class);
+            AttributedList<ch.cyberduck.core.Path> children = listService.list(entry, new DisabledListProgressListener());
 
-                for (final ch.cyberduck.core.Path child : children) {
-                    Path childPath = dir.resolve(child.getName());
-                    list.add(childPath);
+            for (final ch.cyberduck.core.Path child : children) {
+                Path childPath = dir.resolve(child.getName());
+                list.add(childPath);
 //System.err.println("child: " + childPath.toRealPath().toString());
 
-                    cache.putFile(childPath, child);
-                }
-                cache.putFolder(dir, list);
-            } catch (BackgroundException e) {
-                throw new IOException(e);
+                cache.putFile(childPath, child);
             }
-        }
+            cache.putFolder(dir, list);
 
-        return list;
+            return list;
+        } catch (BackgroundException e) {
+            throw new IOException(e);
+        }
     }
 
     /** */
     private void removeEntry(Path path) throws IOException {
-        ch.cyberduck.core.Path entry = cache.getEntry(path);
-        if (entry.isDirectory()) {
-            if (cache.getChildCount(path) > 0) {
-                throw new DirectoryNotEmptyException(path.toString());
-            }
-        }
-
-        // TODO: unknown what happens when a move operation is performed
-        // and the target already exists
         try {
+            ch.cyberduck.core.Path entry = cache.getEntry(path);
+            if (entry.isDirectory()) {
+                List<Path> entries = getDirectoryEntries(path);
+                if (entries.size() > 0) {
+entries.forEach(System.err::println);
+                    throw new DirectoryNotEmptyException(path.toString());
+                }
+            }
+
+            // TODO: unknown what happens when a move operation is performed
+            // and the target already exists
             final Delete delete = session._getFeature(Delete.class);
             delete.delete(Arrays.asList(entry), new DisabledConnectionCallback(), new Delete.DisabledCallback());
 
@@ -419,8 +421,8 @@ Debug.println("upload w/o option");
      */
     private void moveEntry(final Path source, final Path target, boolean targetIsParent) throws IOException {
         try {
-        ch.cyberduck.core.Path sourceEntry = cache.getEntry(source);
-        if (sourceEntry.isFile()) {
+            ch.cyberduck.core.Path sourceEntry = cache.getEntry(source);
+            if (sourceEntry.isFile()) {
                 ch.cyberduck.core.Path targetParentEntry = cache.getEntry(targetIsParent ? target : target.getParent());
                 ch.cyberduck.core.Path preEntry;
                 if (targetIsParent) {
@@ -448,9 +450,9 @@ Debug.println("upload w/o option");
                 ch.cyberduck.core.Path newEntry = cache.getEntry(target); // TODO
                 cache.moveEntry(source, target, newEntry);
             }
-            } catch (BackgroundException e) {
-                throw new IOException(e);
-            }
+        } catch (BackgroundException e) {
+            throw new IOException(e);
+        }
     }
 
     /** */
