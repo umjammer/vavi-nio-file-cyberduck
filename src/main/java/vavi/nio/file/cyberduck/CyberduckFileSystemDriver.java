@@ -219,14 +219,7 @@ Debug.println("upload w/o option");
     @Override
     public DirectoryStream<Path> newDirectoryStream(final Path dir,
                                                     final DirectoryStream.Filter<? super Path> filter) throws IOException {
-        List<Path> list = null;
-        if (cache.containsFolder(dir)) {
-            list = cache.getFolder(dir);
-        } else {
-            list = getDirectoryEntries(dir);
-        }
-
-        return Util.newDirectoryStream(list, filter);
+        return Util.newDirectoryStream(getDirectoryEntries(dir), filter);
     }
 
     @Override
@@ -353,19 +346,24 @@ Debug.println("upload w/o option");
                 throw new NotDirectoryException(dir.toString());
             }
 
-            List<Path> list = new ArrayList<>();
+            List<Path> list = null;
+            if (cache.containsFolder(dir)) {
+                list = cache.getFolder(dir);
+            } else {
+                list = new ArrayList<>();
 
-            final ListService listService = session._getFeature(ListService.class);
-            AttributedList<ch.cyberduck.core.Path> children = listService.list(entry, new DisabledListProgressListener());
+                final ListService listService = session._getFeature(ListService.class);
+                AttributedList<ch.cyberduck.core.Path> children = listService.list(entry, new DisabledListProgressListener());
 
-            for (final ch.cyberduck.core.Path child : children) {
-                Path childPath = dir.resolve(child.getName());
-                list.add(childPath);
+                for (final ch.cyberduck.core.Path child : children) {
+                    Path childPath = dir.resolve(child.getName());
+                    list.add(childPath);
 //System.err.println("child: " + childPath.toRealPath().toString());
 
-                cache.putFile(childPath, child);
+                    cache.putFile(childPath, child);
+                }
+                cache.putFolder(dir, list);
             }
-            cache.putFolder(dir, list);
 
             return list;
         } catch (BackgroundException e) {
@@ -378,9 +376,7 @@ Debug.println("upload w/o option");
         try {
             ch.cyberduck.core.Path entry = cache.getEntry(path);
             if (entry.isDirectory()) {
-                List<Path> entries = getDirectoryEntries(path);
-                if (entries.size() > 0) {
-entries.forEach(System.err::println);
+                if (getDirectoryEntries(path).size() > 0) {
                     throw new DirectoryNotEmptyException(path.toString());
                 }
             }
