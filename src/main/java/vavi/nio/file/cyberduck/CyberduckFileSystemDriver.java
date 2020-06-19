@@ -111,10 +111,12 @@ public final class CyberduckFileSystemDriver extends ExtendedFileSystemDriverBas
                         entry = new DefaultHomeFinderService(session).find();
                     } else {
                         ch.cyberduck.core.Path parentEntry = getEntry(path.getParent());
+//Debug.println("parentEntry: " + parentEntry.getAbsolute());
                         Search search = session._getFeature(Search.class);
+                        // TODO SearchFilter is not exact match, so entries might be > 1
                         AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(toFilenameString(path)), new DisabledListProgressListener());
                         if (!entries.isEmpty()) {
-Debug.println("entries: " + entries.size());
+//Debug.println("entries: " + entries.size());
                             entry = entries.get(0);
                         } else {
                             if (cache.containsFile(path)) {
@@ -445,6 +447,7 @@ Debug.println("upload w/o option");
                 move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
                 ch.cyberduck.core.Path newEntry = cache.getEntry(target); // TODO
                 cache.moveEntry(source, target, newEntry);
+//Debug.println(newEntry.getParent() + "/" + newEntry.getName() + ", " + newEntry.isDirectory());
             }
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -454,7 +457,6 @@ Debug.println("upload w/o option");
     /** */
     private void renameEntry(final Path source, final Path target) throws IOException {
         ch.cyberduck.core.Path sourceEntry = cache.getEntry(source);
-//Debug.println(sourceEntry.id + ", " + sourceEntry.name);
 
         try {
             ch.cyberduck.core.Path targetParentEntry = cache.getEntry(target.getParent());
