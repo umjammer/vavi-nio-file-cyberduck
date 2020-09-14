@@ -23,6 +23,8 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 
 /**
@@ -60,7 +62,7 @@ Debug.println("credential: by uri");
         try {
             Credentials credentials = new Credentials(credential.getId(), credential.getPassword());
             Host host = new Host(new DAVSSLProtocol(), credential.getHost(), credential.getPort(), uri.getPath(), credentials);
-            DAVSession session = new DAVSession(host);
+            DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             return session;
