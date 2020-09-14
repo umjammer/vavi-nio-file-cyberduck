@@ -28,6 +28,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 
 /**
@@ -113,7 +115,7 @@ Debug.println("credential: by uri");
             credentials.setIdentity(new Local(c.keyPath));
             credentials.setIdentityPassphrase(c.passphrase);
             Host host = new Host(new SFTPProtocol(), c.getHost(), c.getPort(), uri.getPath(), credentials);
-            SFTPSession session = new SFTPSession(host);
+            SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             return session;
