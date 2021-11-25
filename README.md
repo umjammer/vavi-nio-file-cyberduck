@@ -43,3 +43,9 @@ test.webdav.port=your_webdav_port
 test.webdav.path=/your_webdav_path
 $ mvn test
 ```
+
+### webdav hosting service for test
+
+ * [boxdab](https://www.box.com/) ... ~~closed~~ still working
+ * [4shared](https://www.4shared.com/) ... limited term, folder deletion doesn't work???
+ * [pCloud](https://my.pcloud.com/) ... seems good (2021-11-03)
