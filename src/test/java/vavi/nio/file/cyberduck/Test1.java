@@ -64,7 +64,7 @@ Debug.println("---");
 
         URI uri = URI.create(String.format("cyberduck:webdav://%s:%s@%s:%s%s", username, password, host, port, path));
 
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP));
+        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap()));
     }
 
     /**
@@ -88,7 +88,7 @@ Debug.println("---");
 
         URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
 
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP));
+        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap()));
     }
 }
 

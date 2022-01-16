@@ -44,7 +44,7 @@ public class Main3 {
 
         URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
 
-        FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP);
+        FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
 
         testMoveFolder(fs);
     }
