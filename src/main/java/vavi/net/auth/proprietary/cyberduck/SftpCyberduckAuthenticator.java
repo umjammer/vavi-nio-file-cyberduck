@@ -50,7 +50,7 @@ public class SftpCyberduckAuthenticator implements CyberduckAuthenticator {
      * </p>
      */
     @PropsEntity(url = "file://${user.home}/.vavifuse/credentials.properties")
-    private static class SftpCyberduckCredential extends CyberduckCredential {
+    private static final class SftpCyberduckCredential extends CyberduckCredential {
         @Property(name = "ssh.keyPath.{0}")
         private String keyPath;
         @Property(name = "ssh.passphrase.{0}")
