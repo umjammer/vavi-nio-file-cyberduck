@@ -23,15 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.io.IOUtils;
-
-import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
-
-import vavi.nio.file.Util;
-import vavi.util.Debug;
-
-import static vavi.nio.file.Util.toFilenameString;
-
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -49,6 +40,12 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilter;
 import com.github.fge.filesystem.driver.DoubleCachedFileSystemDriver;
+import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
+import org.apache.commons.io.IOUtils;
+import vavi.nio.file.Util;
+import vavi.util.Debug;
+
+import static vavi.nio.file.Util.toFilenameString;
 
 
 /**
@@ -64,7 +61,7 @@ public final class CyberduckFileSystemDriver extends DoubleCachedFileSystemDrive
     public CyberduckFileSystemDriver(final FileStore fileStore,
             FileSystemFactoryProvider provider,
             Session<?> session,
-            Map<String, ?> env) {
+            Map<String, ?> env) throws IOException {
         super(fileStore, provider);
         this.session = session;
         setEnv(env);
