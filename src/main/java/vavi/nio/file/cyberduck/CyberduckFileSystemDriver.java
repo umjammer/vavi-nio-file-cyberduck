@@ -25,7 +25,6 @@ import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
 
-import com.github.fge.filesystem.driver.CachedFileSystemDriver;
 import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 
 import vavi.nio.file.Util;
@@ -49,6 +48,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilter;
+import com.github.fge.filesystem.driver.DoubleCachedFileSystemDriver;
 
 
 /**
@@ -57,7 +57,7 @@ import ch.cyberduck.ui.browser.SearchFilter;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2016/03/11 umjammer initial version <br>
  */
-public final class CyberduckFileSystemDriver extends CachedFileSystemDriver<ch.cyberduck.core.Path> {
+public final class CyberduckFileSystemDriver extends DoubleCachedFileSystemDriver<ch.cyberduck.core.Path> {
 
     private Session<?> session;
 
@@ -112,7 +112,7 @@ Debug.println("parentEntry: " + parentEntry.getAbsolute());
     };
 
     @Override
-    protected InputStream downloadEntry(ch.cyberduck.core.Path entry, Path path, Set<? extends OpenOption> options) throws IOException {
+    protected InputStream downloadEntryImpl(ch.cyberduck.core.Path entry, Path path, Set<? extends OpenOption> options) throws IOException {
         try {
             Read read = session._getFeature(Read.class);
             // this is best performance
