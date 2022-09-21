@@ -50,9 +50,11 @@ $ mvn test
 
 ### webdav hosting service for test
 
- * [boxdab](https://www.box.com/) ... ~~closed~~ still working
- * [4shared](https://www.4shared.com/) ... limited term, folder deletion doesn't work???
- * [pCloud](https://my.pcloud.com/) ... seems good (2021-11-03)
+ * [boxdab](https://www.box.com/) ... ~~closed~~ ~~still working~~ works, but got error. closed? (Aug 2022)
+ * [4shared](https://www.4shared.com/) ... limited term, folder deletion doesn't work??? -> banned by ltns 
+ * [pCloud](https://my.pcloud.com/) ... seems good (2021-11-03) -> banned by ltns
+ * [DriveHQ](https://www.drivehq.com/) ... seems good for testing (2022-09-21)
+
 ## TODO
 
  * ~~log4j -> JUL delegation~~
