@@ -53,3 +53,12 @@ $ mvn test
  * [boxdab](https://www.box.com/) ... ~~closed~~ still working
  * [4shared](https://www.4shared.com/) ... limited term, folder deletion doesn't work???
  * [pCloud](https://my.pcloud.com/) ... seems good (2021-11-03)
+## TODO
+
+ * ~~log4j -> JUL delegation~~
+   * log4j-jul ... doesn't work well
+
+## Warning
+
+this project includes dummy `org.slf4j.bridge.SLF4JBridgeHandler` for cyberduck's not loosely coupled implementation.
+if you wat to use this project with the package `org.slf4j:jul-to-slf4j`, you might get some troubles.

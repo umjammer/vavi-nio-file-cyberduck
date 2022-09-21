@@ -16,10 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -95,7 +97,7 @@ public final class CyberduckFileSystemDriver extends DoubleCachedFileSystemDrive
     @Override
     protected ch.cyberduck.core.Path getEntry(ch.cyberduck.core.Path parentEntry, Path path)throws IOException {
         try {
-Debug.println("parentEntry: " + parentEntry.getAbsolute());
+Debug.println(Level.FINE, "parentEntry: " + parentEntry.getAbsolute());
             Search search = session._getFeature(Search.class);
             // TODO SearchFilter is not exact match, so entries might be > 1
             AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(toFilenameString(path)), new DisabledListProgressListener());
@@ -114,7 +116,7 @@ Debug.println("parentEntry: " + parentEntry.getAbsolute());
     protected InputStream downloadEntryImpl(ch.cyberduck.core.Path entry, Path path, Set<? extends OpenOption> options) throws IOException {
         try {
             Read read = session._getFeature(Read.class);
-            // this is best performance
+            // this is the best performance
             return read.read(entry, new TransferStatus(), new DisabledConnectionCallback());
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -205,7 +207,7 @@ Debug.println("upload w/o option");
             // TODO: unknown what happens when a move operation is performed
             // and the target already exists
             Delete delete = session._getFeature(Delete.class);
-            delete.delete(Arrays.asList(entry), new DisabledConnectionCallback(), new Delete.DisabledCallback());
+            delete.delete(Collections.singletonList(entry), new DisabledConnectionCallback(), new Delete.DisabledCallback());
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
