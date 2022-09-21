@@ -36,6 +36,7 @@ class Test1 {
         URI uri = URI.create("cyberduck:webdav:///dav?alias=" + "boxdav");
 
         Map<String, Object> env = new HashMap<>();
+        env.put(CyberduckFileSystemProvider.ENV_DISABLED_FILE_CACHE, true);
         FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, env);
         Path root = fs.getRootDirectories().iterator().next();
 Debug.println(root.toString());
@@ -88,7 +89,10 @@ Debug.println("---");
 
         URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
 
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap()));
+        Map<String, Object> env = new HashMap<>();
+        env.put(CyberduckFileSystemProvider.ENV_DISABLED_FILE_CACHE, true);
+
+        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, env));
     }
 }
 
