@@ -51,6 +51,8 @@ import static vavi.nio.file.Util.toFilenameString;
 /**
  * CyberduckFileSystemDriver.
  *
+ * TODO does file cache really needed?
+ *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2016/03/11 umjammer initial version <br>
  */

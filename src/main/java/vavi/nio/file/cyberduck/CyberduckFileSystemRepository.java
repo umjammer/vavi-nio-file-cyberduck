@@ -41,7 +41,7 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
 
     /**
      * @param uri "cyberduck:protocol:///?alias=alias", sub url (after "cyberduck:") parts will be replaced by properties.
-     *            if you don't use alias, the url must include username, password, host, port.
+     *            if you don't use alias, the url must be included username, password, host, port.
      */
     @Nonnull
     @Override
