@@ -13,8 +13,8 @@
 
   <properties>
     <cyberduck.version>7.6.0</cyberduck.version>
-    <vavi-nio-file.groupId>vavi</vavi-nio-file.groupId> <!-- com.github.umjammer -->
-    <vavi-nio-file.version>0.0.14-SNAPSHOT</vavi-nio-file.version>
+    <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId> <!-- com.github.umjammer -->
+    <vavi-nio-file.version>0.0.14</vavi-nio-file.version>
     <!-- com.github.umjammer.vavi-apps-fuse -->
     <vavi-net-fuse.groupId>vavi</vavi-net-fuse.groupId>
     <vavi-net-fuse.version>0.1.8-SNAPSHOT</vavi-net-fuse.version>
@@ -130,7 +130,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.8.2</version>
+        <version>5.9.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
