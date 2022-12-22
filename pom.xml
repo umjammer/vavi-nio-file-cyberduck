@@ -3,7 +3,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-nio-file-cyberduck</artifactId>
-  <version>0.0.10</version>
+  <version>0.0.11</version>
 
   <url>https://github.com/umjammer/vavi-nio-file-cyberduck</url>
   <scm>
@@ -14,10 +14,10 @@
   <properties>
     <cyberduck.version>7.6.0</cyberduck.version>
     <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId> <!-- com.github.umjammer -->
-    <vavi-nio-file.version>0.0.14</vavi-nio-file.version>
+    <vavi-nio-file.version>0.0.15</vavi-nio-file.version>
     <!-- com.github.umjammer.vavi-apps-fuse -->
-    <vavi-net-fuse.groupId>vavi</vavi-net-fuse.groupId>
-    <vavi-net-fuse.version>0.1.8-SNAPSHOT</vavi-net-fuse.version>
+    <vavi-net-fuse.groupId>com.github.umjammer.vavi-apps-fuse</vavi-net-fuse.groupId>
+    <vavi-net-fuse.version>0.1.8</vavi-net-fuse.version>
   </properties>
 
   <profiles>
@@ -176,9 +176,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.fge</groupId>
+      <groupId>com.github.umjammer</groupId>
       <artifactId>java7-fs-base</artifactId>
-      <version>0.0.13v-SNAPSHOT</version>
+      <version>0.0.13v</version>
     </dependency>
     <dependency>
       <groupId>com.github.umjammer.vavi-net-auth</groupId>
