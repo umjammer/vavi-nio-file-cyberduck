@@ -32,7 +32,8 @@ import static vavi.nio.file.Base.testAll;
 class Test1 {
 
     static {
-        System.setProperty("vavi.util.logging.VaviFormatter.extraClassMethod", "org\\.slf4j\\.impl\\.JDK14LoggerAdapter#(log|debug)");
+        System.setProperty("vavi.util.logging.VaviFormatter.extraClassMethod",
+                "org\\.slf4j\\.impl\\.JDK14LoggerAdapter#(log|debug)");
     }
 
     public static void main(String[] args) throws Exception {
@@ -47,6 +48,7 @@ Debug.println(Level.FINE, root.toString());
         Files.list(root).forEach(System.err::println);
         System.err.println("---");
         Files.list(root.resolve("waiting")).forEach(System.err::println);
+        fs.close();
     }
 
     /**
