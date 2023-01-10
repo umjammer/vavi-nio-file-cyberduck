@@ -6,6 +6,7 @@
 
 package vavi.nio.file.cyberduck;
 
+import com.github.fge.filesystem.driver.DoubleCachedFileSystemDriver;
 import com.github.fge.filesystem.provider.FileSystemProviderBase;
 
 
@@ -18,6 +19,8 @@ import com.github.fge.filesystem.provider.FileSystemProviderBase;
 public final class CyberduckFileSystemProvider extends FileSystemProviderBase {
 
     public static final String PARAM_ALIAS = "alias";
+
+    public static final String ENV_DISABLED_FILE_CACHE = DoubleCachedFileSystemDriver.ENV_DISABLED_FILE_CACHE;
 
     public CyberduckFileSystemProvider() {
         super(new CyberduckFileSystemRepository());

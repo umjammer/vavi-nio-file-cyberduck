@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
 
-import vavi.nio.file.cyberduck.CyberduckFileSystemProvider;
-import vavi.util.Debug;
-
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -25,6 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import vavi.nio.file.cyberduck.CyberduckFileSystemProvider;
+import vavi.util.Debug;
 
 
 /**
@@ -61,7 +60,7 @@ Debug.println("credential: by uri");
     public Session<?> authorize(CyberduckCredential credential) throws IOException {
         try {
             Credentials credentials = new Credentials(credential.getId(), credential.getPassword());
-            Host host = new Host(new DAVSSLProtocol(), credential.getHost(), credential.getPort(), uri.getPath(), credentials);
+            Host host = new Host(new DAVSSLProtocol(), credential.getHost(), credential.getPort(), credential.getPath().replace(" ", "%20"), credentials);
             DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());

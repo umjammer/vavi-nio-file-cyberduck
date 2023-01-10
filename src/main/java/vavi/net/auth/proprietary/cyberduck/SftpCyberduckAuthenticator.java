@@ -44,13 +44,13 @@ public class SftpCyberduckAuthenticator implements CyberduckAuthenticator {
      * <p>
      * properties file "~/vavifuse/credentials.properties"
      * <ul>
-     * <li> ssh.keyPath.alias
-     * <li> ssh.passphrase.alias
+     * <li> ssh.keyPath.<i>alias</i>
+     * <li> ssh.passphrase.<i>alias</i>
      * </ul>
      * </p>
      */
     @PropsEntity(url = "file://${user.home}/.vavifuse/credentials.properties")
-    private static class SftpCyberduckCredential extends CyberduckCredential {
+    private static final class SftpCyberduckCredential extends CyberduckCredential {
         @Property(name = "ssh.keyPath.{0}")
         private String keyPath;
         @Property(name = "ssh.passphrase.{0}")
@@ -109,12 +109,12 @@ Debug.println("credential: by uri");
 
     @Override
     public Session<?> authorize(CyberduckCredential credential) throws IOException {
-        SftpCyberduckCredential c = SftpCyberduckCredential.class.cast(credential);
+        SftpCyberduckCredential c = (SftpCyberduckCredential) credential;
         try {
             Credentials credentials = new Credentials(c.getId());
             credentials.setIdentity(new Local(c.keyPath));
             credentials.setIdentityPassphrase(c.passphrase);
-            Host host = new Host(new SFTPProtocol(), c.getHost(), c.getPort(), uri.getPath(), credentials);
+            Host host = new Host(new SFTPProtocol(), c.getHost(), c.getPort(), c.getPath(), credentials);
             SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());

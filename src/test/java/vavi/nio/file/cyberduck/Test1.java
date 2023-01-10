@@ -14,10 +14,10 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
-
 import vavi.util.Debug;
 
 import static vavi.nio.file.Base.testAll;
@@ -31,17 +31,24 @@ import static vavi.nio.file.Base.testAll;
  */
 class Test1 {
 
+    static {
+        System.setProperty("vavi.util.logging.VaviFormatter.extraClassMethod",
+                "org\\.slf4j\\.impl\\.JDK14LoggerAdapter#(log|debug)");
+    }
+
     public static void main(String[] args) throws Exception {
 
-        URI uri = URI.create("cyberduck:webdav:///dav?alias=" + "boxdav");
+        URI uri = URI.create("cyberduck:sftp://?alias=" + "sftp");
 
         Map<String, Object> env = new HashMap<>();
+        env.put(CyberduckFileSystemProvider.ENV_DISABLED_FILE_CACHE, true);
         FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, env);
         Path root = fs.getRootDirectories().iterator().next();
-Debug.println(root.toString());
+Debug.println(Level.FINE, root.toString());
         Files.list(root).forEach(System.err::println);
-Debug.println("---");
-        Files.list(root.resolve("Books/IT")).forEach(System.err::println);
+        System.err.println("---");
+        Files.list(root.resolve("waiting")).forEach(System.err::println);
+        fs.close();
     }
 
     /**
@@ -63,8 +70,9 @@ Debug.println("---");
         String path = System.getenv("TEST_WEBDAV_PATH");
 
         URI uri = URI.create(String.format("cyberduck:webdav://%s:%s@%s:%s%s", username, password, host, port, path));
+Debug.println(Level.FINE, uri);
 
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP));
+        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap()));
     }
 
     /**
@@ -88,7 +96,10 @@ Debug.println("---");
 
         URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
 
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.EMPTY_MAP));
+        Map<String, Object> env = new HashMap<>();
+        env.put(CyberduckFileSystemProvider.ENV_DISABLED_FILE_CACHE, true);
+
+        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, env));
     }
 }
 

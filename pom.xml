@@ -3,7 +3,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-nio-file-cyberduck</artifactId>
-  <version>0.0.10</version>
+  <version>0.0.11</version>
 
   <url>https://github.com/umjammer/vavi-nio-file-cyberduck</url>
   <scm>
@@ -13,10 +13,11 @@
 
   <properties>
     <cyberduck.version>7.6.0</cyberduck.version>
-    <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId>
-    <vavi-nio-file.version>0.0.12</vavi-nio-file.version>
+    <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId> <!-- com.github.umjammer -->
+    <vavi-nio-file.version>0.0.15</vavi-nio-file.version>
+    <!-- com.github.umjammer.vavi-apps-fuse -->
     <vavi-net-fuse.groupId>com.github.umjammer.vavi-apps-fuse</vavi-net-fuse.groupId>
-    <vavi-net-fuse.version>0.1.5</vavi-net-fuse.version>
+    <vavi-net-fuse.version>0.1.8</vavi-net-fuse.version>
   </properties>
 
   <profiles>
@@ -54,7 +55,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.22.2</version>
+            <version>3.0.0-M7</version>
             <configuration>
               <environmentVariables>
                 <TEST_WEBDAV_ACCOUNT>${test.webdav.account}</TEST_WEBDAV_ACCOUNT>
@@ -87,7 +88,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.22.2</version>
+            <version>3.0.0-M7</version>
             <configuration>
               <argLine>-Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties</argLine>
               <trimStackTrace>false</trimStackTrace>
@@ -101,11 +102,13 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.10.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+          <encoding>utf-8</encoding>
         </configuration>
       </plugin>
     </plugins>
@@ -118,15 +121,41 @@
     </repository>
     <repository>
       <id>maven.cyberduck.io-release</id>
-      <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases</url>
+      <url>https://repo.maven.cyberduck.io.s3.amazonaws.com/releases</url>
     </repository>
   </repositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.9.1</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>ch.cyberduck</groupId>
       <artifactId>core</artifactId>
       <version>${cyberduck.version}</version>
+      <!--
+        cyberduck uses "slf4j -> log4j" and "jul -> slf4j".
+        i removed those backend and bridge for specifying a backend by myself.
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jul-to-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>ch.cyberduck</groupId>
@@ -140,45 +169,41 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.umjammer</groupId>
-      <artifactId>java7-fs-base</artifactId>
-      <version>0.0.10v</version>
+      <!-- cyberduck logging (slf4j) backend -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.36</version>
     </dependency>
 
     <dependency>
-      <groupId>${vavi-nio-file.groupId}</groupId>
-      <artifactId>vavi-nio-file</artifactId>
-      <version>${vavi-nio-file.version}</version>
+      <groupId>com.github.umjammer</groupId>
+      <artifactId>java7-fs-base</artifactId>
+      <version>0.0.13v</version>
     </dependency>
-
     <dependency>
       <groupId>com.github.umjammer.vavi-net-auth</groupId>
       <artifactId>vavi-net-auth-common</artifactId>
-      <version>0.1.2</version>
+      <version>0.1.4</version>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-commons</artifactId>
-      <version>1.5.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <version>5.3.0</version>
       <scope>test</scope>
     </dependency>
 

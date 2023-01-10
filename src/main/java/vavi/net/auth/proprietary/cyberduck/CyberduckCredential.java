@@ -19,6 +19,11 @@ import vavi.util.properties.annotation.PropsEntity;
  * CyberduckCredential.
  * <p>
  * properties file "~/vavifuse/credentials.properties"
+ * <li>"cyberduck.username.<i>alias</i>" ... account name</li>
+ * <li>"cyberduck.password.<i>alias</i>" ... account password</li>
+ * <li>"cyberduck.host.<i>alias</i>" ... host name</li>
+ * <li>"cyberduck.port.<i>alias</i>" ... port number</li>
+ * <li>"cyberduck.path.<i>alias</i>" ... url path part</li>
  * </p>
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2020/02/15 umjammer initial version <br>
@@ -34,6 +39,8 @@ public class CyberduckCredential implements UserCredential, AppCredential {
     protected String host;
     @Property(name = "cyberduck.port.{0}")
     protected int port = -1;
+    @Property(name = "cyberduck.path.{0}")
+    protected String path = "/";
 
     /** */
     protected String scheme;
@@ -54,10 +61,13 @@ public class CyberduckCredential implements UserCredential, AppCredential {
         if (uri.getPort() != -1) {
             this.port = uri.getPort();
         }
+        if (uri.getPath() != null && !uri.getPath().isEmpty()) {
+            this.path = uri.getPath();
+        }
     }
 
     /**
-     * @param alias
+     * @param alias binding arg no {0}
      */
     public CyberduckCredential(String alias) {
         try {
@@ -95,6 +105,11 @@ public class CyberduckCredential implements UserCredential, AppCredential {
     /** */
     public String getHost() {
         return host;
+    }
+
+    /** default "/" */
+    public String getPath() {
+        return path;
     }
 
     /** default 80 */
