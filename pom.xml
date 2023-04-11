@@ -12,7 +12,7 @@
   <name>vavi-nio-file-cyberduck</name>
 
   <properties>
-    <cyberduck.version>7.6.0</cyberduck.version>
+    <cyberduck.version>8.5.8</cyberduck.version>
     <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId> <!-- com.github.umjammer -->
     <vavi-nio-file.version>0.0.15</vavi-nio-file.version>
     <!-- com.github.umjammer.vavi-apps-fuse -->
@@ -154,6 +154,18 @@
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>jul-to-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-core-asl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-mapper-asl</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

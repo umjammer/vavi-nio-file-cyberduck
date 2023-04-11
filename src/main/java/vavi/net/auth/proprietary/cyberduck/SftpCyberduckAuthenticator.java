@@ -11,25 +11,26 @@ import java.net.URI;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import vavi.net.http.HttpUtil;
 import vavi.nio.file.cyberduck.CyberduckFileSystemProvider;
 import vavi.util.Debug;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
-
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 
 /**
@@ -116,8 +117,8 @@ Debug.println("credential: by uri");
             credentials.setIdentityPassphrase(c.passphrase);
             Host host = new Host(new SFTPProtocol(), c.getHost(), c.getPort(), c.getPath(), credentials);
             SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+            LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+            login.connect(session, new DisabledCancelCallback());
             return session;
         } catch (BackgroundException e) {
             throw new IOException(e);

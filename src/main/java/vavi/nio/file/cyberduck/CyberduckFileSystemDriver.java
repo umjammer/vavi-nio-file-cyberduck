@@ -38,6 +38,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -189,7 +190,7 @@ Debug.println("upload w/o option");
         try {
             Directory<?> directory = session._getFeature(Directory.class);
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(dir), EnumSet.of(ch.cyberduck.core.Path.Type.directory));
-            ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, null, new TransferStatus());
+            ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, new TransferStatus());
             return newEntry;
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -218,7 +219,7 @@ Debug.println("upload w/o option");
         try {
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
             Copy copy = session._getFeature(Copy.class);
-            return copy.copy(sourceEntry, preEntry, new TransferStatus(), new DisabledConnectionCallback());
+            return copy.copy(sourceEntry, preEntry, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
