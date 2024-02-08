@@ -13,11 +13,10 @@
 
   <properties>
     <cyberduck.version>8.7.3</cyberduck.version>
-    <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId> <!-- com.github.umjammer -->
-    <vavi-nio-file.version>0.0.15</vavi-nio-file.version>
-    <!-- com.github.umjammer.vavi-apps-fuse -->
-    <vavi-net-fuse.groupId>com.github.umjammer.vavi-apps-fuse</vavi-net-fuse.groupId>
-    <vavi-net-fuse.version>0.1.8</vavi-net-fuse.version>
+    <vavi-nio-file-base.groupId>com.github.umjammer</vavi-nio-file-base.groupId> <!-- com.github.fge / com.github.umjammer -->
+    <vavi-nio-file-base.version>0.0.14v</vavi-nio-file-base.version>
+    <vavi-net-fuse.groupId>com.github.umjammer.vavi-apps-fuse</vavi-net-fuse.groupId> <!-- vavi / com.github.umjammer.vavi-apps-fuse -->
+    <vavi-net-fuse.version>0.1.9</vavi-net-fuse.version>
   </properties>
 
   <profiles>
@@ -55,7 +54,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M7</version>
+            <version>3.2.2</version>
             <configuration>
               <environmentVariables>
                 <TEST_WEBDAV_ACCOUNT>${test.webdav.account}</TEST_WEBDAV_ACCOUNT>
@@ -88,7 +87,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M7</version>
+            <version>3.2.2</version>
             <configuration>
               <argLine>-Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties</argLine>
               <trimStackTrace>false</trimStackTrace>
@@ -104,11 +103,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
+        <version>3.11.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <encoding>utf-8</encoding>
+          <release>17</release>
         </configuration>
       </plugin>
     </plugins>
@@ -130,7 +127,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.9.1</version>
+        <version>5.10.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -145,6 +142,7 @@
       <!--
         cyberduck uses "slf4j -> log4j" and "jul -> slf4j".
         i removed those backend and bridge for specifying a backend by myself.
+        2024-02-09 cyberduck starts using log4j partly???
       -->
       <exclusions>
         <exclusion>
@@ -167,8 +165,17 @@
           <groupId>org.codehaus.jackson</groupId>
           <artifactId>jackson-mapper-asl</artifactId>
         </exclusion>
+        <exclusion>
+          <artifactId>guava</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
+<dependency>
+  <artifactId>guava</artifactId>
+  <groupId>com.google.guava</groupId>
+  <version>32.0.0-jre</version>
+</dependency>
     <dependency>
       <groupId>ch.cyberduck</groupId>
       <artifactId>webdav</artifactId>
@@ -188,14 +195,14 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.umjammer</groupId>
-      <artifactId>java7-fs-base</artifactId>
-      <version>0.0.13v</version>
+      <groupId>${vavi-nio-file-base.groupId}</groupId>
+      <artifactId>vavi-nio-file-base</artifactId>
+      <version>${vavi-nio-file-base.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.umjammer.vavi-net-auth</groupId>
+      <groupId>com.github.umjammer.vavi-net-auth</groupId> <!-- vavi / com.github.umjammer.vavi-net-auth -->
       <artifactId>vavi-net-auth-common</artifactId>
-      <version>0.1.4</version>
+      <version>0.1.9</version>
     </dependency>
 
     <dependency>
@@ -220,9 +227,9 @@
     </dependency>
 
     <dependency>
-      <groupId>${vavi-nio-file.groupId}</groupId>
-      <artifactId>vavi-nio-file</artifactId>
-      <version>${vavi-nio-file.version}</version>
+      <groupId>${vavi-nio-file-base.groupId}</groupId>
+      <artifactId>vavi-nio-file-base</artifactId>
+      <version>${vavi-nio-file-base.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
