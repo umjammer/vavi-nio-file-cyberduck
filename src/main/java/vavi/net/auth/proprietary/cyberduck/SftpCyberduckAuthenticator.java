@@ -115,7 +115,14 @@ Debug.println("credential: by uri");
             Credentials credentials = new Credentials(c.getId());
             credentials.setIdentity(new Local(c.keyPath));
             credentials.setIdentityPassphrase(c.passphrase);
-            Host host = new Host(new SFTPProtocol(), c.getHost(), c.getPort(), c.getPath(), credentials);
+            Host host = new Host(new SFTPProtocol(), c.getHost(), c.getPort(), c.getPath(), credentials) {
+                @Override public String getProperty(String key) {
+                    if("ssh.authentication.agent.enable".equals(key)) {
+                        return String.valueOf(false);
+                    }
+                    return null;
+                }
+            };
             SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
             login.connect(session, new DisabledCancelCallback());

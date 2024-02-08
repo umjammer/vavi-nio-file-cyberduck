@@ -12,7 +12,7 @@
   <name>vavi-nio-file-cyberduck</name>
 
   <properties>
-    <cyberduck.version>8.5.8</cyberduck.version>
+    <cyberduck.version>8.7.3</cyberduck.version>
     <vavi-nio-file.groupId>com.github.umjammer</vavi-nio-file.groupId> <!-- com.github.umjammer -->
     <vavi-nio-file.version>0.0.15</vavi-nio-file.version>
     <!-- com.github.umjammer.vavi-apps-fuse -->
@@ -121,7 +121,7 @@
     </repository>
     <repository>
       <id>maven.cyberduck.io-release</id>
-      <url>https://repo.maven.cyberduck.io.s3.amazonaws.com/releases</url>
+      <url>https://s3-eu-west-1.amazonaws.com/repo.maven.cyberduck.io/releases</url>
     </repository>
   </repositories>
 
