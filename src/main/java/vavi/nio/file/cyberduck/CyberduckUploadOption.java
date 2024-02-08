@@ -44,7 +44,7 @@ public class CyberduckUploadOption implements OpenOption, CopyOption {
 
     @Override
     public boolean equals(Object other) {
-        return other != null && CyberduckUploadOption.class.isInstance(other); // TODO ad-hoc
+        return other != null && other instanceof CyberduckUploadOption; // TODO ad-hoc
     }
 
     @Override

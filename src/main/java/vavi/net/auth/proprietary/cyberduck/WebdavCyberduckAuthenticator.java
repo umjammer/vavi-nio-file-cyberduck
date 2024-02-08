@@ -22,7 +22,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import vavi.nio.file.cyberduck.CyberduckFileSystemProvider;

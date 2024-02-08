@@ -27,11 +27,11 @@ public interface CyberduckAuthenticator extends Authenticator<CyberduckCredentia
     /** factory */
     static CyberduckAuthenticator getAuthenticator(URI uri) {
         String scheme = uri.getScheme();
-        switch (scheme) {
-        case "webdav": return new WebdavCyberduckAuthenticator();
-        case "sftp": return new SftpCyberduckAuthenticator();
-        default: throw new IllegalArgumentException(scheme);
-        }
+        return switch (scheme) {
+            case "webdav" -> new WebdavCyberduckAuthenticator();
+            case "sftp" -> new SftpCyberduckAuthenticator();
+            default -> throw new IllegalArgumentException(scheme);
+        };
     }
 }
 

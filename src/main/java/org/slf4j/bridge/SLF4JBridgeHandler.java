@@ -31,6 +31,7 @@ import java.util.logging.LogRecord;
 import org.slf4j.Logger;
 import org.slf4j.spi.LocationAwareLogger;
 
+
 /**
  * ⚠⚠⚠ WARNING ⚠⚠⚠
  * {@link ch.cyberduck.core.preferences.Preferences#setLogging(String)} uses this class (original version)'s method.
@@ -38,100 +39,97 @@ import org.slf4j.spi.LocationAwareLogger;
  */
 public class SLF4JBridgeHandler extends Handler {
 
-  /**
-   */
-  public static void install() {
-    // ignore
-  }
+    /** */
+    public static void install() {
+        // ignore
+    }
 
-  private static java.util.logging.Logger getRootLogger() {
-    return LogManager.getLogManager().getLogger("");
-  }
+    private static java.util.logging.Logger getRootLogger() {
+        return LogManager.getLogManager().getLogger("");
+    }
 
-  /**
-   * Removes previously installed SLF4JBridgeHandler instances. See also
-   * {@link #install()}.
-   *
-   * @throws SecurityException A <code>SecurityException</code> is thrown, if a security manager
-   *                           exists and if the caller does not have
-   *                           LoggingPermission("control").
-   */
-  public static void uninstall() throws SecurityException {
-    // ignore
-  }
+    /**
+     * Removes previously installed SLF4JBridgeHandler instances. See also
+     * {@link #install()}.
+     *
+     * @throws SecurityException A <code>SecurityException</code> is thrown, if a security manager
+     *                           exists and if the caller does not have
+     *                           LoggingPermission("control").
+     */
+    public static void uninstall() throws SecurityException {
+        // ignore
+    }
 
-  /**
-   * Returns true if SLF4JBridgeHandler has been previously installed, returns false otherwise.
-   *
-   * @return true if SLF4JBridgeHandler is already installed, false other wise
-   * @throws SecurityException
-   */
-  public static boolean isInstalled() throws SecurityException {
-    return false;
-  }
+    /**
+     * Returns true if SLF4JBridgeHandler has been previously installed, returns false otherwise.
+     *
+     * @return true if SLF4JBridgeHandler is already installed, false other wise
+     * @throws SecurityException
+     */
+    public static boolean isInstalled() throws SecurityException {
+        return false;
+    }
 
-  /**
-   * Invoking this method removes/unregisters/detaches all handlers currently attached to the root logger
-   * @since 1.6.5
-   */
-  public static void removeHandlersForRootLogger() {
-    // ignore
-  }
+    /**
+     * Invoking this method removes/unregisters/detaches all handlers currently attached to the root logger
+     *
+     * @since 1.6.5
+     */
+    public static void removeHandlersForRootLogger() {
+        // ignore
+    }
 
-  /**
-   * Initialize this handler.
-   */
-  public SLF4JBridgeHandler() {
-  }
+    /**
+     * Initialize this handler.
+     */
+    public SLF4JBridgeHandler() {
+    }
 
-  /**
-   * No-op implementation.
-   */
-  public void close() {
-    // empty
-  }
+    @Override
+    public void close() {
+        // empty
+    }
 
-  /**
-   * No-op implementation.
-   */
-  public void flush() {
-    // empty
-  }
+    @Override
+    public void flush() {
+        // empty
+    }
 
-  /**
-   * Return the Logger instance that will be used for logging.
-   */
-  protected Logger getSLF4JLogger(LogRecord record) {
-    throw new UnsupportedOperationException();
-  }
+    /**
+     * Return the Logger instance that will be used for logging.
+     */
+    protected Logger getSLF4JLogger(LogRecord record) {
+        throw new UnsupportedOperationException();
+    }
 
-  protected void callLocationAwareLogger(LocationAwareLogger lal, LogRecord record) {
-    throw new UnsupportedOperationException();
-  }
+    protected void callLocationAwareLogger(LocationAwareLogger lal, LogRecord record) {
+        throw new UnsupportedOperationException();
+    }
 
-  /**
-   * Get the record's message, possibly via a resource bundle.
-   *
-   * @param record
-   * @return
-   */
-  private String getMessageI18N(LogRecord record) {
-    throw new UnsupportedOperationException();
-  }
+    /**
+     * Get the record's message, possibly via a resource bundle.
+     *
+     * @param record
+     * @return
+     */
+    private String getMessageI18N(LogRecord record) {
+        throw new UnsupportedOperationException();
+    }
 
-  /**
-   * Publish a LogRecord.
-   * <p/>
-   * The logging request was made initially to a Logger object, which
-   * initialized the LogRecord and forwarded it here.
-   * <p/>
-   * This handler ignores the Level attached to the LogRecord, as SLF4J cares
-   * about discarding log statements.
-   *
-   * @param record Description of the log event. A null record is silently ignored
-   *               and is not published.
-   */
-  public void publish(LogRecord record) {
-    throw new UnsupportedOperationException();
-  }
+    /**
+     * Publish a LogRecord.
+     * <p/>
+     * The logging request was made initially to a Logger object, which
+     * initialized the LogRecord and forwarded it here.
+     * <p/>
+     * This handler ignores the Level attached to the LogRecord, as SLF4J cares
+     * about discarding log statements.
+     *
+     * @param record Description of the log event. A null record is silently ignored
+     *               and is not published.
+     */
+    @Override
+    public void publish(LogRecord record) {
+        throw new UnsupportedOperationException();
+    }
 }

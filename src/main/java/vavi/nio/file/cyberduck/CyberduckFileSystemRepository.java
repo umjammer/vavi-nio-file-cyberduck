@@ -45,7 +45,7 @@ public final class CyberduckFileSystemRepository extends FileSystemRepositoryBas
      */
     @Nonnull
     @Override
-    public FileSystemDriver createDriver(final URI uri, final Map<String, ?> env) throws IOException {
+    public FileSystemDriver createDriver(URI uri, Map<String, ?> env) throws IOException {
         String uriString = uri.toString();
         URI subUri = URI.create(uriString.substring(uriString.indexOf(':') + 1));
         String protocol = subUri.getScheme();
@@ -63,7 +63,8 @@ Debug.println("protocol: " + protocol);
     }
 
     /* ad-hoc hack for ignoring checking opacity */
-    protected void checkURI(@Nullable final URI uri) {
+    @Override
+    protected void checkURI(@Nullable URI uri) {
         Objects.requireNonNull(uri);
         if (!uri.isAbsolute()) {
             throw new IllegalArgumentException("uri is not absolute");
