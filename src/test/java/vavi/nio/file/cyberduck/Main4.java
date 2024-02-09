@@ -8,6 +8,7 @@ package vavi.nio.file.cyberduck;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.HashMap;
@@ -42,10 +43,10 @@ public class Main4 {
     @BeforeEach
     public void before() throws Exception {
         mountPoint = System.getenv("TEST4_MOUNT_POINT");
-        String username = URLEncoder.encode(System.getenv("TEST4_SFTP_ACCOUNT"), "utf-8");
-        String passPhrase = URLEncoder.encode(System.getenv("TEST4_SFTP_PASSPHRASE"), "utf-8");
+        String username = URLEncoder.encode(System.getenv("TEST4_SFTP_ACCOUNT"), StandardCharsets.UTF_8);
+        String passPhrase = URLEncoder.encode(System.getenv("TEST4_SFTP_PASSPHRASE"), StandardCharsets.UTF_8);
         String host = System.getenv("TEST4_SFTP_HOST");
-        String keyPath = URLEncoder.encode(System.getenv("TEST4_SFTP_KEYPATH"), "utf-8");
+        String keyPath = URLEncoder.encode(System.getenv("TEST4_SFTP_KEYPATH"), StandardCharsets.UTF_8);
         String path = System.getenv("TEST4_SFTP_PATH");
 
         URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));

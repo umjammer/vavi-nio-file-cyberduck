@@ -34,7 +34,7 @@ public final class CyberduckFileStore extends FileStoreBase {
      *
      * @param session the (valid) OneDrive client to use
      */
-    public CyberduckFileStore(final Session<?> session, final FileAttributesFactory factory) {
+    public CyberduckFileStore(Session<?> session, FileAttributesFactory factory) {
         super("cyberduck", factory, false);
         this.session = session;
     }
@@ -48,7 +48,7 @@ public final class CyberduckFileStore extends FileStoreBase {
      */
     @Override
     public long getTotalSpace() throws IOException {
-        final Quota.Space quota = getQuota();
+        Quota.Space quota = getQuota();
         return quota == null ? 0 : quota.available + quota.used;
     }
 
@@ -70,7 +70,7 @@ public final class CyberduckFileStore extends FileStoreBase {
      */
     @Override
     public long getUsableSpace() throws IOException {
-        final Quota.Space quota = getQuota();
+        Quota.Space quota = getQuota();
         if (quota == null) {
             return 0;
         } else {

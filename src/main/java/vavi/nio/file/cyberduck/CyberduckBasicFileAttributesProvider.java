@@ -36,7 +36,7 @@ public final class CyberduckBasicFileAttributesProvider extends BasicFileAttribu
 
     private final ch.cyberduck.core.Path entry;
 
-    public CyberduckBasicFileAttributesProvider(@Nonnull final ch.cyberduck.core.Path entry) throws IOException {
+    public CyberduckBasicFileAttributesProvider(@Nonnull ch.cyberduck.core.Path entry) throws IOException {
         this.entry = Objects.requireNonNull(entry);
     }
 

@@ -15,7 +15,6 @@ import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -38,6 +37,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -62,10 +62,10 @@ public final class CyberduckFileSystemDriver extends DoubleCachedFileSystemDrive
 
     private Session<?> session;
 
-    public CyberduckFileSystemDriver(final FileStore fileStore,
-            FileSystemFactoryProvider provider,
-            Session<?> session,
-            Map<String, ?> env) throws IOException {
+    public CyberduckFileSystemDriver(FileStore fileStore,
+                                     FileSystemFactoryProvider provider,
+                                     Session<?> session,
+                                     Map<String, ?> env) throws IOException {
         super(fileStore, provider);
         this.session = session;
         setEnv(env);
@@ -110,7 +110,7 @@ Debug.println(Level.FINE, "parentEntry: " + parentEntry.getAbsolute());
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
-    };
+    }
 
     @Override
     protected InputStream downloadEntryImpl(ch.cyberduck.core.Path entry, Path path, Set<? extends OpenOption> options) throws IOException {
@@ -165,7 +165,7 @@ Debug.println("upload w/o option");
             status.setOffset(0);
             status.setLength(size); // TODO seems to work w/o size (sftp)
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(path), EnumSet.of(ch.cyberduck.core.Path.Type.file));
-            // this is best performance
+            // this is the best performance
             return new BufferedOutputStream(write.write(preEntry, status, new DisabledConnectionCallback()));
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -189,7 +189,7 @@ Debug.println("upload w/o option");
         try {
             Directory<?> directory = session._getFeature(Directory.class);
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(dir), EnumSet.of(ch.cyberduck.core.Path.Type.directory));
-            ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, null, new TransferStatus());
+            ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, new TransferStatus());
             return newEntry;
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -198,7 +198,7 @@ Debug.println("upload w/o option");
 
     @Override
     protected boolean hasChildren(ch.cyberduck.core.Path dirEntry, Path dir) throws IOException {
-        return getDirectoryEntries(dirEntry, dir).size() > 0;        
+        return !getDirectoryEntries(dirEntry, dir).isEmpty();
     }
 
     @Override
@@ -218,7 +218,7 @@ Debug.println("upload w/o option");
         try {
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
             Copy copy = session._getFeature(Copy.class);
-            return copy.copy(sourceEntry, preEntry, new TransferStatus(), new DisabledConnectionCallback());
+            return copy.copy(sourceEntry, preEntry, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
@@ -233,7 +233,7 @@ Debug.println("upload w/o option");
             } else {
                 preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
             }
-            final Move move = session._getFeature(Move.class);
+            Move move = session._getFeature(Move.class);
             // TODO why cannot use move() return like copy or rename
             move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             if (targetIsParent) {
