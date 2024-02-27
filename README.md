@@ -1,5 +1,5 @@
 [![Release](https://jitpack.io/v/umjammer/vavi-nio-file-cyberduck.svg)](https://jitpack.io/#umjammer/vavi-nio-file-cyberduck)
-[![Java CI](https://github.com/umjammer/vavi-nio-file-cyberduck/actions/workflows/maven.yml/badge.svg)](https://github.com/umjammer/vavi-nio-file-cyberduck/actions)
+[![Java CI](https://github.com/umjammer/vavi-nio-file-cyberduck/actions/workflows/maven.yml/badge.svg)](https://github.com/umjammer/vavi-nio-file-cyberduck/actions/workflows/maven.yml)
 [![CodeQL](https://github.com/umjammer/vavi-nio-file-cyberduck/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/umjammer/vavi-nio-file-cyberduck/actions/workflows/codeql-analysis.yml)
 ![Java](https://img.shields.io/badge/Java-17-b07219)
 [![Parent](https://img.shields.io/badge/Parent-vavi--apps--fuse-pink)](https://github.com/umjammer/vavi-apps-fuse)
