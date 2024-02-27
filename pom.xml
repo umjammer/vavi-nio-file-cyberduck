@@ -15,8 +15,8 @@
     <cyberduck.version>8.7.3</cyberduck.version>
     <vavi-nio-file-base.groupId>com.github.umjammer</vavi-nio-file-base.groupId> <!-- com.github.fge / com.github.umjammer -->
     <vavi-nio-file-base.version>0.0.14v</vavi-nio-file-base.version>
-    <vavi-net-fuse.groupId>com.github.umjammer.vavi-apps-fuse</vavi-net-fuse.groupId> <!-- vavi / com.github.umjammer.vavi-apps-fuse -->
-    <vavi-net-fuse.version>0.1.9</vavi-net-fuse.version>
+    <vavi-nio-file-fuse.groupId>com.github.umjammer</vavi-nio-file-fuse.groupId> <!-- vavi / com.github.umjammer -->
+    <vavi-nio-file-fuse.version>0.0.16</vavi-nio-file-fuse.version>
   </properties>
 
   <profiles>
@@ -136,6 +136,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>5.14.0</version>
+    </dependency>
+    <dependency>
       <groupId>ch.cyberduck</groupId>
       <artifactId>core</artifactId>
       <version>${cyberduck.version}</version>
@@ -169,6 +174,14 @@
           <artifactId>guava</artifactId>
           <groupId>com.google.guava</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>jna</artifactId>
+          <groupId>net.java.dev.jna</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jna-min</artifactId>
+          <groupId>net.java.dev.jna</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
 <dependency>
@@ -185,7 +198,18 @@
       <groupId>ch.cyberduck</groupId>
       <artifactId>ssh</artifactId>
       <version>${cyberduck.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.ion</groupId>
+          <artifactId>ion-java</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+<dependency>
+  <groupId>com.amazon.ion</groupId>
+  <artifactId>ion-java</artifactId>
+  <version>1.11.3</version>
+</dependency>
 
     <dependency>
       <!-- cyberduck logging (slf4j) backend -->
@@ -241,17 +265,25 @@
     </dependency>
 
     <dependency>
-      <groupId>${vavi-net-fuse.groupId}</groupId>
-      <artifactId>vavi-net-fuse</artifactId>
-      <version>${vavi-net-fuse.version}</version>
+      <groupId>${vavi-nio-file-fuse.groupId}</groupId>
+      <artifactId>vavi-nio-file-fuse</artifactId>
+      <version>${vavi-nio-file-fuse.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>${vavi-net-fuse.groupId}</groupId>
-      <artifactId>vavi-net-fuse</artifactId>
-      <version>${vavi-net-fuse.version}</version>
+      <groupId>${vavi-nio-file-fuse.groupId}</groupId>
+      <artifactId>vavi-nio-file-fuse</artifactId>
+      <version>${vavi-nio-file-fuse.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+
+<!-- cause error
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+      <version>2.22.1</version>
+    </dependency>
+-->
   </dependencies>
 </project>
