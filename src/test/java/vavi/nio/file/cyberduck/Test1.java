@@ -103,5 +103,3 @@ Debug.println(Level.FINE, uri);
         testAll(new CyberduckFileSystemProvider().newFileSystem(uri, env));
     }
 }
-
-/* */
