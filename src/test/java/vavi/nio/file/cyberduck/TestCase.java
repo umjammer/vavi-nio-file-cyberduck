@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import vavi.util.Debug;
@@ -25,12 +26,12 @@ import static vavi.nio.file.Base.testAll;
 
 
 /**
- * Test1.
+ * TestCase.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2019/07/17 umjammer initial version <br>
  */
-class Test1 {
+class TestCase {
 
     public static void main(String[] args) throws Exception {
 
@@ -58,6 +59,7 @@ Debug.println(Level.FINE, root.toString());
      * </ul>
      */
     @Test
+    @DisplayName("webdav")
     void test01() throws Exception {
         String username = URLEncoder.encode(System.getenv("TEST_WEBDAV_ACCOUNT"), StandardCharsets.UTF_8);
         String password = System.getenv("TEST_WEBDAV_PASSWORD");
@@ -82,6 +84,7 @@ Debug.println(Level.FINE, uri);
      * </ul>
      */
     @Test
+    @DisplayName("sftp")
     @DisabledIfEnvironmentVariable(named = "GITHUB_WORKFLOW", matches = ".*")
     void test02() throws Exception {
         String username = URLEncoder.encode(System.getenv("TEST_SFTP_ACCOUNT"), StandardCharsets.UTF_8);

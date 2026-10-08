@@ -44,6 +44,7 @@ import ch.cyberduck.ui.browser.SearchFilter;
 import com.github.fge.filesystem.driver.DoubleCachedFileSystemDriver;
 import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 import org.apache.commons.io.IOUtils;
+import org.openqa.selenium.devtools.Reply;
 import vavi.nio.file.Util;
 import vavi.util.Debug;
 
@@ -189,7 +190,7 @@ Debug.println("upload w/o option");
         try {
             Directory<?> directory = session._getFeature(Directory.class);
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(dir), EnumSet.of(ch.cyberduck.core.Path.Type.directory));
-            ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, new TransferStatus());
+            ch.cyberduck.core.Path newEntry = directory.mkdir(session._getFeature(Write.class), preEntry, new TransferStatus());
             return newEntry;
         } catch (BackgroundException e) {
             throw new IOException(e);

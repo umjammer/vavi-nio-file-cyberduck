@@ -14,7 +14,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import static vavi.nio.file.Base.testLargeFile;
+import static vavi.nio.file.Base.testMoveFolder;
 
 
 /**
@@ -23,7 +23,7 @@ import static vavi.nio.file.Base.testLargeFile;
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2016/03/xx umjammer initial version <br>
  */
-public class Main2 {
+public class TotalTest {
 
     /**
      * environment variable
@@ -36,7 +36,7 @@ public class Main2 {
      * </ul>
      */
     @Test
-    void test01() throws Exception {
+    void test02() throws Exception {
         String username = URLEncoder.encode(System.getenv("TEST_SFTP_ACCOUNT"), StandardCharsets.UTF_8);
         String passPhrase = System.getenv("TEST_SFTP_PASSPHRASE");
         String host = System.getenv("TEST_SFTP_HOST");
@@ -47,6 +47,6 @@ public class Main2 {
 
         FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
 
-        testLargeFile(fs, CyberduckUploadOption.class);
+        testMoveFolder(fs);
     }
 }

@@ -29,7 +29,7 @@ import vavi.net.fuse.Base;
  * @version 0.00 2017/03/19 umjammer initial version <br>
  */
 @DisabledIfEnvironmentVariable(named = "GITHUB_WORKFLOW", matches = ".*")
-public class Main4 {
+public class FuseTest {
 
     String mountPoint;
     FileSystem fs;
@@ -37,12 +37,12 @@ public class Main4 {
 
     @BeforeEach
     public void before() throws Exception {
-        mountPoint = System.getenv("TEST4_MOUNT_POINT");
-        String username = URLEncoder.encode(System.getenv("TEST4_SFTP_ACCOUNT"), StandardCharsets.UTF_8);
-        String passPhrase = URLEncoder.encode(System.getenv("TEST4_SFTP_PASSPHRASE"), StandardCharsets.UTF_8);
-        String host = System.getenv("TEST4_SFTP_HOST");
-        String keyPath = URLEncoder.encode(System.getenv("TEST4_SFTP_KEYPATH"), StandardCharsets.UTF_8);
-        String path = System.getenv("TEST4_SFTP_PATH");
+        mountPoint = System.getenv("TEST_MOUNT_POINT");
+        String username = URLEncoder.encode(System.getenv("TEST_SFTP_ACCOUNT"), StandardCharsets.UTF_8);
+        String passPhrase = URLEncoder.encode(System.getenv("TEST_SFTP_PASSPHRASE"), StandardCharsets.UTF_8);
+        String host = System.getenv("TEST_SFTP_HOST");
+        String keyPath = URLEncoder.encode(System.getenv("TEST_SFTP_KEYPATH"), StandardCharsets.UTF_8);
+        String path = System.getenv("TEST_SFTP_PATH");
 
         URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
 
