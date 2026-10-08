@@ -6,9 +6,6 @@
 
 package vavi.nio.file.cyberduck;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.util.Collections;
 
@@ -25,28 +22,13 @@ import static vavi.nio.file.Base.testLargeFile;
  */
 public class LargeTest {
 
-    /**
-     * environment variable
-     * <ul>
-     * <li> TEST_SFTP_ACCOUNT
-     * <li> TEST_SFTP_PASSPHRASE
-     * <li> TEST_SFTP_HOST
-     * <li> TEST_SFTP_KEYPATH
-     * <li> TEST_SFTP_PATH
-     * </ul>
-     */
+    /** on a temporary sftp server */
     @Test
     void test01() throws Exception {
-        String username = URLEncoder.encode(System.getenv("TEST_SFTP_ACCOUNT"), StandardCharsets.UTF_8);
-        String passPhrase = System.getenv("TEST_SFTP_PASSPHRASE");
-        String host = System.getenv("TEST_SFTP_HOST");
-        String keyPath = System.getenv("TEST_SFTP_KEYPATH");
-        String path = System.getenv("TEST_SFTP_PATH");
+        try (SftpTestServer server = new SftpTestServer();
+             FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(server.getUri(), Collections.emptyMap())) {
 
-        URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
-
-        FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
-
-        testLargeFile(fs, CyberduckUploadOption.class);
+            testLargeFile(fs, CyberduckUploadOption.class);
+        }
     }
 }

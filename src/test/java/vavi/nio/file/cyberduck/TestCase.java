@@ -7,8 +7,6 @@
 package vavi.nio.file.cyberduck;
 
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +17,6 @@ import java.util.logging.Level;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import vavi.util.Debug;
 
 import static vavi.nio.file.Base.testAll;
@@ -48,56 +45,30 @@ Debug.println(Level.FINE, root.toString());
         fs.close();
     }
 
-    /**
-     * environment variable
-     * <ul>
-     * <li> TEST_WEBDAV_ACCOUNT
-     * <li> TEST_WEBDAV_PASSWORD
-     * <li> TEST_WEBDAV_HOST
-     * <li> TEST_WEBDAV_PORT
-     * <li> TEST_WEBDAV_PATH
-     * </ul>
-     */
+    /** on a temporary webdav server */
     @Test
     @DisplayName("webdav")
     void test01() throws Exception {
-        String username = URLEncoder.encode(System.getenv("TEST_WEBDAV_ACCOUNT"), StandardCharsets.UTF_8);
-        String password = System.getenv("TEST_WEBDAV_PASSWORD");
-        String host = System.getenv("TEST_WEBDAV_HOST");
-        String port = System.getenv("TEST_WEBDAV_PORT");
-        String path = System.getenv("TEST_WEBDAV_PATH");
+        try (WebdavTestServer server = new WebdavTestServer();
+             FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(server.getUri(), Collections.emptyMap())) {
+Debug.println(Level.FINE, server.getUri());
 
-        URI uri = URI.create(String.format("cyberduck:webdav://%s:%s@%s:%s%s", username, password, host, port, path));
-Debug.println(Level.FINE, uri);
-
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, Collections.emptyMap()));
+            testAll(fs);
+        }
     }
 
-    /**
-     * environment variable
-     * <ul>
-     * <li> TEST_SFTP_ACCOUNT
-     * <li> TEST_SFTP_PASSPHRASE
-     * <li> TEST_SFTP_HOST
-     * <li> TEST_SFTP_KEYPATH
-     * <li> TEST_SFTP_PATH
-     * </ul>
-     */
+    /** on a temporary sftp server */
     @Test
     @DisplayName("sftp")
-    @DisabledIfEnvironmentVariable(named = "GITHUB_WORKFLOW", matches = ".*")
     void test02() throws Exception {
-        String username = URLEncoder.encode(System.getenv("TEST_SFTP_ACCOUNT"), StandardCharsets.UTF_8);
-        String passPhrase = System.getenv("TEST_SFTP_PASSPHRASE");
-        String host = System.getenv("TEST_SFTP_HOST");
-        String keyPath = System.getenv("TEST_SFTP_KEYPATH");
-        String path = System.getenv("TEST_SFTP_PATH");
-
-        URI uri = URI.create(String.format("cyberduck:sftp://%s@%s%s?keyPath=%s&passphrase=%s", username, host, path, keyPath, passPhrase));
-
         Map<String, Object> env = new HashMap<>();
         env.put(CyberduckFileSystemProvider.ENV_DISABLED_FILE_CACHE, true);
 
-        testAll(new CyberduckFileSystemProvider().newFileSystem(uri, env));
+        try (SftpTestServer server = new SftpTestServer();
+             FileSystem fs = new CyberduckFileSystemProvider().newFileSystem(server.getUri(), env)) {
+Debug.println(Level.FINE, server.getUri());
+
+            testAll(fs);
+        }
     }
 }

@@ -100,14 +100,10 @@ public final class CyberduckFileSystemDriver extends DoubleCachedFileSystemDrive
         try {
 Debug.println(Level.FINE, "parentEntry: " + parentEntry.getAbsolute());
             Search search = session._getFeature(Search.class);
-            // TODO SearchFilter is not exact match, so entries might be > 1
-            AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(toFilenameString(path)), new DisabledListProgressListener());
-            if (!entries.isEmpty()) {
-//Debug.println("entries: " + entries.size());
-                return entries.get(0);
-            } else {
-                return null;
-            }
+            // SearchFilter is not exact match, so entries might be > 1
+            String name = toFilenameString(path);
+            AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(name), new DisabledListProgressListener());
+            return entries.find(e -> e.getParent() != null && e.getParent().getAbsolute().equals(parentEntry.getAbsolute()) && name.equals(e.getName()));
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
@@ -245,7 +241,7 @@ Debug.println("upload w/o option");
             Move move = session._getFeature(Move.class);
             // TODO why cannot use move() return like copy or rename
             move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            ch.cyberduck.core.Path newEntry = getEntry(null, target); // TODO
+            ch.cyberduck.core.Path newEntry = getEntry(targetParentEntry, target); // TODO
 //Debug.println(newEntry.toAbsolutePath().getParent() + "/" + newEntry.getName() + ", " + newEntry.isDirectory());
             return newEntry;
         } catch (BackgroundException e) {
