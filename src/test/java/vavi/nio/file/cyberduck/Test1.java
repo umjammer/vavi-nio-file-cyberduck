@@ -32,11 +32,6 @@ import static vavi.nio.file.Base.testAll;
  */
 class Test1 {
 
-    static {
-        System.setProperty("vavi.util.logging.VaviFormatter.extraClassMethod",
-                "org\\.slf4j\\.impl\\.JDK14LoggerAdapter#(log|debug|warn)");
-    }
-
     public static void main(String[] args) throws Exception {
 
         URI uri = URI.create("cyberduck:sftp://?alias=" + "sftp");

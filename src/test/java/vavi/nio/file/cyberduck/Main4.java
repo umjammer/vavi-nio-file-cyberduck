@@ -31,11 +31,6 @@ import vavi.net.fuse.Base;
 @DisabledIfEnvironmentVariable(named = "GITHUB_WORKFLOW", matches = ".*")
 public class Main4 {
 
-    static {
-        System.setProperty("vavi.util.logging.VaviFormatter.extraClassMethod",
-                           "co\\.paralleluniverse\\.fuse\\.LoggedFuseFilesystem#log");
-    }
-
     String mountPoint;
     FileSystem fs;
     Map<String, Object> options;
