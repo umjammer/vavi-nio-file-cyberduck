@@ -288,14 +288,14 @@
       <version>${vavi-nio-file-base.version}</version>
     </dependency>
     <dependency>
-      <groupId>vavi</groupId> <!-- vavi / com.github.umjammer.vavi-net-auth -->
+      <groupId>com.github.umjammer.vavi-net-auth</groupId> <!-- vavi / com.github.umjammer.vavi-net-auth -->
       <artifactId>vavi-net-auth-common</artifactId>
-      <version>0.1.16-SNAPSHOT</version>
+      <version>0.1.16</version>
     </dependency>
     <dependency>
       <groupId>com.github.umjammer</groupId> <!-- vavi / com.github.umjammer -->
       <artifactId>vavi-commons-net</artifactId>
-      <version>1.0.9</version>
+      <version>1.0.10</version>
     </dependency>
 
     <dependency>
@@ -367,11 +367,12 @@
       <scope>test</scope>
     </dependency>
 
-<!-- cause error
+<!-- causes error
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-to-slf4j</artifactId>
       <version>2.22.1</version>
+      <scope>test</scope>
     </dependency>
 -->
   </dependencies>
