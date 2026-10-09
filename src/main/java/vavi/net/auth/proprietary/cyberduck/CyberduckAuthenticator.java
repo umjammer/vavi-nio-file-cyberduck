@@ -34,5 +34,3 @@ public interface CyberduckAuthenticator extends Authenticator<CyberduckCredentia
         };
     }
 }
-
-/* */

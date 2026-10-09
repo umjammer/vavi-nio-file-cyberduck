@@ -117,5 +117,3 @@ public class CyberduckCredential implements UserCredential, AppCredential {
         return port == -1 ? 80 : port;
     }
 }
-
-/* */

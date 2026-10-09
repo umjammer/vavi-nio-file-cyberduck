@@ -11,7 +11,6 @@ import java.net.URI;
 import java.util.NoSuchElementException;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -24,6 +23,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.DisabledCancelCallback;
 import vavi.nio.file.cyberduck.CyberduckFileSystemProvider;
 import vavi.util.Debug;
 
@@ -72,5 +72,3 @@ Debug.println("credential: by uri");
         }
     }
 }
-
-/* */

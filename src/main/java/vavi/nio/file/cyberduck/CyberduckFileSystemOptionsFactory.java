@@ -25,5 +25,3 @@ public class CyberduckFileSystemOptionsFactory extends FileSystemOptionsFactory 
         addWriteOpenOption(new CyberduckUploadOption(null));
     }
 }
-
-/* */

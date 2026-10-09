@@ -52,5 +52,3 @@ public class CyberduckUploadOption implements OpenOption, CopyOption {
         return Long.hashCode(serialVersionUID); // TODO ad-hoc
     }
 }
-
-/* */

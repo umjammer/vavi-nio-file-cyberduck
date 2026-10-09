@@ -44,6 +44,7 @@ import ch.cyberduck.ui.browser.SearchFilter;
 import com.github.fge.filesystem.driver.DoubleCachedFileSystemDriver;
 import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 import org.apache.commons.io.IOUtils;
+import org.openqa.selenium.devtools.Reply;
 import vavi.nio.file.Util;
 import vavi.util.Debug;
 
@@ -99,14 +100,10 @@ public final class CyberduckFileSystemDriver extends DoubleCachedFileSystemDrive
         try {
 Debug.println(Level.FINE, "parentEntry: " + parentEntry.getAbsolute());
             Search search = session._getFeature(Search.class);
-            // TODO SearchFilter is not exact match, so entries might be > 1
-            AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(toFilenameString(path)), new DisabledListProgressListener());
-            if (!entries.isEmpty()) {
-//Debug.println("entries: " + entries.size());
-                return entries.get(0);
-            } else {
-                return null;
-            }
+            // SearchFilter is not exact match, so entries might be > 1
+            String name = toFilenameString(path);
+            AttributedList<ch.cyberduck.core.Path> entries = search.search(parentEntry, new SearchFilter(name), new DisabledListProgressListener());
+            return entries.find(e -> e.getParent() != null && e.getParent().getAbsolute().equals(parentEntry.getAbsolute()) && name.equals(e.getName()));
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
@@ -189,7 +186,7 @@ Debug.println("upload w/o option");
         try {
             Directory<?> directory = session._getFeature(Directory.class);
             ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(parentEntry, toFilenameString(dir), EnumSet.of(ch.cyberduck.core.Path.Type.directory));
-            ch.cyberduck.core.Path newEntry = directory.mkdir(preEntry, new TransferStatus());
+            ch.cyberduck.core.Path newEntry = directory.mkdir(session._getFeature(Write.class), preEntry, new TransferStatus());
             return newEntry;
         } catch (BackgroundException e) {
             throw new IOException(e);
@@ -227,20 +224,11 @@ Debug.println("upload w/o option");
     @Override
     protected ch.cyberduck.core.Path moveEntry(ch.cyberduck.core.Path sourceEntry, ch.cyberduck.core.Path targetParentEntry, Path source, Path target, boolean targetIsParent) throws IOException {
         try {
-            ch.cyberduck.core.Path preEntry;
-            if (targetIsParent) {
-                preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(source), EnumSet.of(ch.cyberduck.core.Path.Type.file));
-            } else {
-                preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
-            }
+            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
             Move move = session._getFeature(Move.class);
             // TODO why cannot use move() return like copy or rename
             move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            if (targetIsParent) {
-                return getEntry(targetParentEntry, target.resolve(source.getFileName())); // TODO
-            } else {
-                return getEntry(targetParentEntry, target); // TODO
-            }
+            return getEntry(targetParentEntry, target); // TODO
         } catch (BackgroundException e) {
             throw new IOException(e);
         }
@@ -249,11 +237,11 @@ Debug.println("upload w/o option");
     @Override
     protected ch.cyberduck.core.Path moveFolderEntry(ch.cyberduck.core.Path sourceEntry, ch.cyberduck.core.Path targetParentEntry, Path source, Path target, boolean targetIsParent) throws IOException {
         try {
-            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.directory));
             Move move = session._getFeature(Move.class);
             // TODO why cannot use move() return like copy or rename
             move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-            ch.cyberduck.core.Path newEntry = getEntry(null, target); // TODO
+            ch.cyberduck.core.Path newEntry = getEntry(targetParentEntry, target); // TODO
 //Debug.println(newEntry.toAbsolutePath().getParent() + "/" + newEntry.getName() + ", " + newEntry.isDirectory());
             return newEntry;
         } catch (BackgroundException e) {
@@ -264,7 +252,7 @@ Debug.println("upload w/o option");
     @Override
     protected ch.cyberduck.core.Path renameEntry(ch.cyberduck.core.Path sourceEntry, ch.cyberduck.core.Path targetParentEntry, Path source, Path target) throws IOException {
         try {
-            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.of(ch.cyberduck.core.Path.Type.file));
+            ch.cyberduck.core.Path preEntry = new ch.cyberduck.core.Path(targetParentEntry, toFilenameString(target), EnumSet.copyOf(sourceEntry.getType()));
             Move move = session._getFeature(Move.class);
             return move.move(sourceEntry, preEntry, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         } catch (BackgroundException e) {
